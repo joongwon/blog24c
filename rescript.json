@@ -1,0 +1,25 @@
+{
+  "name": "blog2024c",
+  "sources": {
+    "dir": "src",
+    "subdirs": true
+  },
+  "package-specs": {
+    "module": "esmodule",
+    "in-source": true
+  },
+  "suffix": ".res.mjs",
+  "jsx": { "version": 4 },
+  "bs-dependencies": [
+    "@rescript/core",
+    "@rescript/react",
+    "pgtyped-rescript",
+    "rescript-nodejs"
+  ],
+  "bsc-flags": [
+    "-open RescriptCore"
+  ],
+  "ppx-flags": [
+    "rescript-embed-lang/ppx"
+  ]
+}

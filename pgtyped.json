@@ -1,0 +1,13 @@
+{
+  "transforms": [
+    {
+      "mode": "res",
+      "include": "**/*.res",
+      "emitTemplate": "{{dir}}/{{name}}__sql.res"
+    }
+  ],
+  "srcDir": "src",
+  "typesOverrides": {
+    "int8": "bigint"
+  }
+}
