@@ -1,6 +1,7 @@
 %%raw(`
 import { types } from 'pg';
 types.setTypeParser(types.builtins.INT8, BigInt);
+types.setTypeParser(types.builtins.DATE, v => v);
 `)
 
 module Pool = {

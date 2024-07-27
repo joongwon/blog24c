@@ -20,7 +20,7 @@ let use = () =>
 
 let timeout = ref(None)
 
-let update = (newState: t) => {
+let rec update = (newState: t) => {
   state := newState
 
   timeout.contents->Option.map(clearTimeout)->ignore
@@ -34,10 +34,11 @@ let update = (newState: t) => {
         | LoggedIn(_) =>
           Actions.refresh()
           ->Promise.thenResolve(res => {
-            switch res {
-            | None => state := Anon
-            | Some(res) => state := LoggedIn(res)
+            let newState = switch res {
+            | None => Anon
+            | Some(res) => LoggedIn(res)
             }
+            update(newState)
           })
           ->Promise.done
         }

@@ -8,6 +8,9 @@
   ],
   "srcDir": "src",
   "typesOverrides": {
-    "int8": "bigint"
+    "int8": "bigint",
+    "timestamp": {
+      "return": "string"
+    }
   }
 }

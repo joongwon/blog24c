@@ -2,9 +2,9 @@
 
 @react.component
 let make = () => {
-  React.useInsertionEffect(() => {
+  React.useEffect0(() => {
     Auth.initToken()->Promise.done
     None
-  }, [])
+  })
   React.null
 }

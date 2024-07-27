@@ -7,7 +7,10 @@ var $$Headers = {
   Cookies: Cookies
 };
 
+var Link = {};
+
 export {
   $$Headers ,
+  Link ,
 }
 /* No side effect */

@@ -14,3 +14,12 @@ module Headers = {
   }
   @module("next/headers") external cookies: unit => Cookies.t = "cookies"
 }
+
+module Link = {
+  @module("next/link") @react.component
+  external make: (
+    ~href: string,
+    ~children: React.element,
+    ~className: option<string>=?,
+  ) => React.element = "default"
+}
