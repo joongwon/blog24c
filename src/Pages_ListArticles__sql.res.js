@@ -4,7 +4,7 @@ import * as Core__Option from "@rescript/core/src/Core__Option.res.js";
 import * as RescriptCore from "@rescript/core/src/RescriptCore.res.js";
 import * as PgtypedRescriptRuntime from "pgtyped-rescript-runtime";
 
-var query1IR = {"usedParamSet":{},"params":[],"statement":"SELECT a.id, title as \"title!\", author_id, name as \"authorName\",\n      first_published_at as \"publishedAt!\", comments_count as \"commentsCount!\", views_count as \"views_count!\", likes_count as \"likes_count!\"\n    FROM last_editions e\n    JOIN articles a ON e.article_id = a.id\n    JOIN users u ON a.author_id = u.id\n    JOIN article_stats s ON a.id = s.id\n    ORDER BY first_published_at DESC"};
+var query1IR = {"usedParamSet":{},"params":[],"statement":"SELECT a.id, title as \"title!\", name as \"authorName\",\n      first_published_at as \"publishedAt!\", comments_count as \"commentsCount!\", views_count as \"viewsCount!\", likes_count as \"likesCount!\"\n    FROM last_editions e\n    JOIN articles a ON e.article_id = a.id\n    JOIN users u ON a.author_id = u.id\n    JOIN article_stats s ON a.id = s.id\n    ORDER BY first_published_at DESC"};
 
 var query = new PgtypedRescriptRuntime.PreparedQuery(query1IR);
 

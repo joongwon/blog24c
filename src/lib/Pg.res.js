@@ -2,7 +2,7 @@
 
 
 import { types } from 'pg';
-types.setTypeParser(types.builtins.INT8, BigInt);
+types.setTypeParser(types.builtins.INT8, v => parseInt(v, 10));
 types.setTypeParser(types.builtins.DATE, v => v);
 ;
 

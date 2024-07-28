@@ -4,44 +4,87 @@ import Link from "next/link";
 import * as Components_Time from "./Components_Time.res.js";
 import * as JsxRuntime from "react/jsx-runtime";
 
-function Components_ArticleList$Container(props) {
+function Components_ArticleList(props) {
   return JsxRuntime.jsx("ul", {
               children: props.children,
               className: "border-t"
             });
 }
 
-var Container = {
-  make: Components_ArticleList$Container
+function Components_ArticleList$Item$Stat(props) {
+  var count = props.count;
+  if (count > 0) {
+    return JsxRuntime.jsxs("span", {
+                children: [
+                  JsxRuntime.jsx("img", {
+                        className: "inline w-5",
+                        alt: props.alt,
+                        src: props.icon
+                      }),
+                  count.toString()
+                ],
+                className: "mr-1 text-gray-500 whitespace-nowrap min-w-fit inline-block"
+              });
+  } else {
+    return null;
+  }
+}
+
+var Stat = {
+  make: Components_ArticleList$Item$Stat
 };
 
 function Components_ArticleList$Item(props) {
   var item = props.item;
   return JsxRuntime.jsxs("li", {
               children: [
-                JsxRuntime.jsx(Link, {
-                      href: "/articles/" + item.id.toString(),
-                      children: item.title,
-                      className: "flex-1"
+                JsxRuntime.jsxs("p", {
+                      children: [
+                        JsxRuntime.jsx(Link, {
+                              href: "/articles/" + item.id.toString(),
+                              children: item.title,
+                              className: "mr-1"
+                            }),
+                        JsxRuntime.jsx(Components_ArticleList$Item$Stat, {
+                              icon: "/icons/comment.svg",
+                              alt: "댓글",
+                              count: item.commentsCount
+                            }),
+                        JsxRuntime.jsx(Components_ArticleList$Item$Stat, {
+                              icon: "/icons/visibility.svg",
+                              alt: "조회수",
+                              count: item.viewsCount
+                            }),
+                        JsxRuntime.jsx(Components_ArticleList$Item$Stat, {
+                              icon: "/icons/favorite.svg",
+                              alt: "좋아요",
+                              count: item.likesCount
+                            })
+                      ]
                     }),
-                JsxRuntime.jsx("p", {
-                      children: item.authorName + ",",
-                      className: "mr-1"
-                    }),
-                JsxRuntime.jsx(Components_Time.make, {
-                      children: item.publishedAt
+                JsxRuntime.jsxs("p", {
+                      children: [
+                        item.authorName + ",",
+                        JsxRuntime.jsx(Components_Time.make, {
+                              children: item.publishedAt
+                            })
+                      ],
+                      className: "mr-1 text-gray-500 text-sm whitespace-nowrap min-w-fit flex-1 text-right"
                     })
               ],
-              className: "border-b p-1 flex"
+              className: "border-b p-1 flex items-center flex-wrap"
             });
 }
 
 var Item = {
+  Stat: Stat,
   make: Components_ArticleList$Item
 };
 
+var make = Components_ArticleList;
+
 export {
-  Container ,
+  make ,
   Item ,
 }
 /* next/link Not a pure module */

@@ -60,16 +60,14 @@ let formatTitle = date => {
 }
 
 @react.component
-let make = (~children) => {
+let make = (~children, ~className=?) => {
   let now = Now.use()
   let date = React.useMemo1(() => children->Date.fromString, [children])
   let title = React.useMemo1(() => formatTitle(children), [children])
   if now -. date->Date.getTime < (7 * 24 * 60 * 60 * 1000)->Int.toFloat {
-    <TimeAgo
-      date formatter now={Some(now)} title={Some(title)} suppressHydrationWarning={Some(true)}
-    />
+    <TimeAgo date formatter now title suppressHydrationWarning={true} ?className />
   } else {
-    <time dateTime={date->Js.Date.toISOString} title={title}>
+    <time dateTime={date->Js.Date.toISOString} title={title} ?className>
       {formatDate(children)->React.string}
     </time>
   }

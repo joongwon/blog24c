@@ -9,14 +9,13 @@ type query1Params = unit
 /** 'Query1' return type */
 @gentype
 type query1Result = {
-  author_id: string,
   authorName: string,
-  commentsCount: bigint,
+  commentsCount: int,
   id: int,
-  likes_count: bigint,
+  likesCount: int,
   publishedAt: string,
   title: string,
-  views_count: bigint,
+  viewsCount: int,
 }
 
 /** 'Query1' query type */
@@ -26,13 +25,13 @@ type query1Query = {
   result: query1Result,
 }
 
-%%private(let query1IR: IR.t = %raw(`{"usedParamSet":{},"params":[],"statement":"SELECT a.id, title as \"title!\", author_id, name as \"authorName\",\n      first_published_at as \"publishedAt!\", comments_count as \"commentsCount!\", views_count as \"views_count!\", likes_count as \"likes_count!\"\n    FROM last_editions e\n    JOIN articles a ON e.article_id = a.id\n    JOIN users u ON a.author_id = u.id\n    JOIN article_stats s ON a.id = s.id\n    ORDER BY first_published_at DESC"}`))
+%%private(let query1IR: IR.t = %raw(`{"usedParamSet":{},"params":[],"statement":"SELECT a.id, title as \"title!\", name as \"authorName\",\n      first_published_at as \"publishedAt!\", comments_count as \"commentsCount!\", views_count as \"viewsCount!\", likes_count as \"likesCount!\"\n    FROM last_editions e\n    JOIN articles a ON e.article_id = a.id\n    JOIN users u ON a.author_id = u.id\n    JOIN article_stats s ON a.id = s.id\n    ORDER BY first_published_at DESC"}`))
 
 /**
  Runnable query:
  ```sql
-SELECT a.id, title as "title!", author_id, name as "authorName",
-      first_published_at as "publishedAt!", comments_count as "commentsCount!", views_count as "views_count!", likes_count as "likes_count!"
+SELECT a.id, title as "title!", name as "authorName",
+      first_published_at as "publishedAt!", comments_count as "commentsCount!", views_count as "viewsCount!", likes_count as "likesCount!"
     FROM last_editions e
     JOIN articles a ON e.article_id = a.id
     JOIN users u ON a.author_id = u.id

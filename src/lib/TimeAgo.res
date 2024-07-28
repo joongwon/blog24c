@@ -9,9 +9,10 @@ type formatter = (
 @module("react-timeago") @react.component
 external make: (
   ~date: Date.t,
-  ~maxPeriod: option<int>=?,
+  ~maxPeriod: int=?,
   ~formatter: formatter,
-  ~title: option<string>=?,
-  ~now: option<float>=?,
-  ~suppressHydrationWarning: option<bool>=?,
+  ~title: string=?,
+  ~now: float=?,
+  ~suppressHydrationWarning: bool=?,
+  ~className: string=?,
 ) => React.element = "default"

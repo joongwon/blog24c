@@ -8,7 +8,7 @@
   ],
   "srcDir": "src",
   "typesOverrides": {
-    "int8": "bigint",
+    "int8": "int",
     "timestamp": {
       "return": "string"
     }

@@ -3,7 +3,6 @@
 
 import * as Now from "./Now.res.js";
 import * as React from "react";
-import * as Caml_option from "rescript/lib/es6/caml_option.js";
 import ReactTimeago from "react-timeago";
 import * as JsxRuntime from "react/jsx-runtime";
 
@@ -98,6 +97,7 @@ function formatTitle(date) {
 }
 
 function Components_Time(props) {
+  var className = props.className;
   var children = props.children;
   var now = Now.use();
   var date = React.useMemo((function () {
@@ -110,13 +110,15 @@ function Components_Time(props) {
     return JsxRuntime.jsx(ReactTimeago, {
                 date: date,
                 formatter: formatter,
-                title: Caml_option.some(title),
-                now: Caml_option.some(now),
-                suppressHydrationWarning: true
+                title: title,
+                now: now,
+                suppressHydrationWarning: true,
+                className: className
               });
   } else {
     return JsxRuntime.jsx("time", {
                 children: formatDate(children),
+                className: className,
                 title: title,
                 dateTime: date.toISOString()
               });
