@@ -61,7 +61,7 @@ let formatTitle = date => {
 
 @react.component
 let make = (~children, ~className=?) => {
-  let now = Now.use()
+  let now = Now.useNow()
   let date = React.useMemo1(() => children->Date.fromString, [children])
   let title = React.useMemo1(() => formatTitle(children), [children])
   if now -. date->Date.getTime < (7 * 24 * 60 * 60 * 1000)->Int.toFloat {

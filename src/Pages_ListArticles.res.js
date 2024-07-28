@@ -15,11 +15,8 @@ async function $$default(param) {
                                 }, article.id.toString());
                     })
               });
-  } else {
-    return JsxRuntime.jsx("main", {
-                children: "error"
-              });
   }
+  throw articles._0;
 }
 
 var Pages_ListArticles$default = $$default;

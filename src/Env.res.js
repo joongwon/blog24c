@@ -8,9 +8,12 @@ var redisUrl = Core__Option.getExn(process.env["REDIS_URL"], "REDIS_URL environm
 
 var jwtSecret = Core__Option.getExn(process.env["JWT_SECRET"], "JWT_SECRET environment variable is not set");
 
+var staticUrl = Core__Option.getExn(process.env["STATIC_URL"], "STATIC_URL environment variable is not set");
+
 export {
   databaseUrl ,
   redisUrl ,
   jwtSecret ,
+  staticUrl ,
 }
 /* databaseUrl Not a pure module */

@@ -9,8 +9,11 @@ var $$Headers = {
 
 var Link = {};
 
+var $$Navigation = {};
+
 export {
   $$Headers ,
   Link ,
+  $$Navigation ,
 }
 /* No side effect */

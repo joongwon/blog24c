@@ -1,3 +1,7 @@
+@module("pg") external types: 'a = "types"
+types["setTypeParser"](types["builtins"]["INT8"], v => Int.fromString(v))
+types["setTypeParser"](types["builtins"]["TIMESTAMP"], v => v)
+
 let dbConfig: Pg.Pool.config = {
   connectionString: Env.databaseUrl,
 }

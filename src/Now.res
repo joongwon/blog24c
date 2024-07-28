@@ -3,7 +3,7 @@
 let state = ref(Date.now())
 let listeners = Set.make()
 
-let use = () =>
+let useNow = () =>
   React_.useSyncExternalStore(
     ~subscribe=listener => {
       listeners->Set.add(listener)

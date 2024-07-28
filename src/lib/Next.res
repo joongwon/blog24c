@@ -23,3 +23,9 @@ module Link = {
     ~className: option<string>=?,
   ) => React.element = "default"
 }
+
+module Navigation = {
+  // thorws error and never return, but rescript does not support bottom type...
+  @moodule("next/navigation")
+  external notFound: unit => React.element = "notFound"
+}

@@ -9,7 +9,7 @@ type t =
 let state = ref(Loading)
 let listeners = Set.make()
 
-let use = () =>
+let useAuth = () =>
   React.useSyncExternalStore(
     ~subscribe=listener => {
       listeners->Set.add(listener)

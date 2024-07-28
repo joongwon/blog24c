@@ -18,14 +18,41 @@ textarea {
   font-style: normal;
 }
 
-.material-symbols-outlined {
-  font-variation-settings:
-    "FILL" 1,
-    "wght" 400,
-    "GRAD" 0,
-    "opsz" 24;
-}
-
 code {
   font-family: "Noto Sans Mono", monospace;
+}
+
+article p {
+  @apply my-4;
+}
+
+article a {
+  @apply text-blue-500;
+  @apply hover:underline;
+  @apply visited:text-purple-500;
+}
+
+article ul {
+  @apply list-disc;
+  @apply list-outside;
+  @apply ml-8;
+  @apply my-4;
+}
+
+article ol {
+  @apply list-decimal;
+  @apply list-outside;
+  @apply ml-8;
+  @apply my-4;
+}
+
+article pre {
+  @apply my-4;
+  @apply p-4;
+  @apply bg-gray-200;
+  @apply rounded-lg;
+}
+
+article code.language-poem {
+  font-family: "GmarketSansMedium", sans-serif;
 }

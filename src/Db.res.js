@@ -3,7 +3,16 @@
 import * as Pg from "pg";
 import * as Env from "./Env.res.js";
 import * as Redis from "redis";
+import * as Core__Int from "@rescript/core/src/Core__Int.res.js";
 import * as Caml_js_exceptions from "rescript/lib/es6/caml_js_exceptions.js";
+
+Pg.types.setTypeParser(Pg.types.builtins.INT8, (function (v) {
+        return Core__Int.fromString(v, undefined);
+      }));
+
+Pg.types.setTypeParser(Pg.types.builtins.TIMESTAMP, (function (v) {
+        return v;
+      }));
 
 var dbConfig = {
   connectionString: Env.databaseUrl
@@ -73,4 +82,4 @@ export {
   redisPromise ,
   getRedis ,
 }
-/* pool Not a pure module */
+/*  Not a pure module */

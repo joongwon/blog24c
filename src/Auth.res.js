@@ -12,7 +12,7 @@ var state = {
 
 var listeners = new Set();
 
-function use() {
+function useAuth() {
   return React.useSyncExternalStore((function (listener) {
                 listeners.add(listener);
                 return function () {
@@ -83,7 +83,7 @@ async function initToken() {
 export {
   state ,
   listeners ,
-  use ,
+  useAuth ,
   timeout ,
   update ,
   initTokenCalled ,

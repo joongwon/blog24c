@@ -14,22 +14,9 @@ module Item = {
     likesCount: int,
   }
 
-  module Stat = {
-    @react.component
-    let make = (~icon, ~alt, ~count) => {
-      if count > 0 {
-        <span className="mr-1 text-gray-500 whitespace-nowrap min-w-fit inline-block">
-          <img src={icon} alt className="inline w-5" />
-          {count->Int.toString->React.string}
-        </span>
-      } else {
-        React.null
-      }
-    }
-  }
-
   @react.component
   let make = (~item) => {
+    module Stat = Components_Stat
     module Time = Components_Time
     <li className="border-b p-1 flex items-center flex-wrap">
       <p>

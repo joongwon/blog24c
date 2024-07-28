@@ -18,6 +18,6 @@ let default = async () => {
       )
       ->React.array}
     </ArticleList>
-  | Error(_) => <main> {"error"->React.string} </main>
+  | Error(error) => raise(error)
   }
 }

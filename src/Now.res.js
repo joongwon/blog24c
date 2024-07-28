@@ -11,7 +11,7 @@ var state = {
 
 var listeners = new Set();
 
-function use() {
+function useNow() {
   return React.useSyncExternalStore((function (listener) {
                 listeners.add(listener);
                 return function () {
@@ -46,7 +46,7 @@ update(Date.now());
 export {
   state ,
   listeners ,
-  use ,
+  useNow ,
   timeout ,
   update ,
 }
