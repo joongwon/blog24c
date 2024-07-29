@@ -4,7 +4,6 @@ import * as Pg from "pg";
 import * as Env from "./Env.res.js";
 import * as Redis from "redis";
 import * as Core__Int from "@rescript/core/src/Core__Int.res.js";
-import * as Caml_js_exceptions from "rescript/lib/es6/caml_js_exceptions.js";
 
 Pg.types.setTypeParser(Pg.types.builtins.INT8, (function (v) {
         return Core__Int.fromString(v, undefined);
@@ -27,18 +26,11 @@ async function tx(f) {
     var result = await f(client);
     await client.query("COMMIT");
     await client.release();
-    return {
-            TAG: "Ok",
-            _0: result
-          };
+    return result;
   }
-  catch (raw_e){
-    var e = Caml_js_exceptions.internalToOCamlException(raw_e);
+  catch (e){
     await client.release();
-    return {
-            TAG: "Error",
-            _0: e
-          };
+    throw e;
   }
 }
 
@@ -47,18 +39,11 @@ async function query(f, param) {
   try {
     var result = await f(client, param);
     await client.release();
-    return {
-            TAG: "Ok",
-            _0: result
-          };
+    return result;
   }
-  catch (raw_e){
-    var e = Caml_js_exceptions.internalToOCamlException(raw_e);
+  catch (e){
     await client.release();
-    return {
-            TAG: "Error",
-            _0: e
-          };
+    throw e;
   }
 }
 

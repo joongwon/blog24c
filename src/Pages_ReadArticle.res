@@ -93,9 +93,8 @@ let default = async (~params) => {
   | Some(aid) =>
     let result = await query(aid)
     switch result {
-    | Error(error) => raise(error)
-    | Ok(None, _) => Next.Navigation.notFound()
-    | Ok(Some(article), (likes, files, comments, prev, next)) =>
+    | (None, _) => Next.Navigation.notFound()
+    | (Some(article), (likes, files, comments, prev, next)) =>
       module Time = Components_Time
       module Stat = Components_Stat
       module ArticleViewer = Components_ArticleViewer
@@ -188,9 +187,8 @@ let generateMetadata = async props => {
   | None => Next.Navigation.notFound()
   | Some(aid) =>
     switch await query(aid) {
-    | Error(error) => raise(error)
-    | Ok(None, _) => Next.Navigation.notFound()
-    | Ok(Some(article), _) =>
+    | (None, _) => Next.Navigation.notFound()
+    | (Some(article), _) =>
       let title = article.title
       let description = article.content->String.substring(~start=0, ~end=100)
       {

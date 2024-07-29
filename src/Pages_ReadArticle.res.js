@@ -55,117 +55,113 @@ async function $$default(param) {
     return $$Navigation.notFound();
   }
   var result = await query(aid$1);
-  if (result.TAG === "Ok") {
-    var match = result._0;
-    var article = match[0];
-    if (article === undefined) {
-      return $$Navigation.notFound();
-    }
-    var match$1 = match[1];
-    var next = match$1[4];
-    var prev = match$1[3];
-    var comments = match$1[2];
-    var likes = match$1[0];
-    return JsxRuntime.jsxs("main", {
-                children: [
-                  JsxRuntime.jsxs("header", {
-                        children: [
-                          JsxRuntime.jsx("h1", {
-                                children: article.title,
-                                className: "font-bold text-3xl"
-                              }),
-                          JsxRuntime.jsxs("p", {
-                                children: [
-                                  article.authorName + ", ",
-                                  JsxRuntime.jsx(Components_Time.make, {
-                                        children: article.firstPublishedAt
-                                      }),
-                                  article.firstPublishedAt !== article.lastPublishedAt ? JsxRuntime.jsxs(JsxRuntime.Fragment, {
-                                          children: [
-                                            " (개정: ",
-                                            JsxRuntime.jsx(Components_Time.make, {
-                                                  children: article.lastPublishedAt
-                                                }),
-                                            ")"
-                                          ]
-                                        }) : null
-                                ],
-                                className: "text-xs"
-                              }),
-                          JsxRuntime.jsxs("p", {
-                                children: [
-                                  JsxRuntime.jsx(Components_Stat.make, {
-                                        icon: JsxRuntime.jsx(Icons.Visibility.make, {}),
-                                        count: article.viewsCount
-                                      }),
-                                  JsxRuntime.jsx(Components_Stat.make, {
-                                        icon: JsxRuntime.jsx(Icons.Favorite.make, {}),
-                                        count: likes.length
-                                      })
-                                ],
-                                className: "text-xs"
-                              })
-                        ]
-                      }),
-                  JsxRuntime.jsx(Components_ArticleViewer.make, {
-                        article: article,
-                        files: match$1[1],
-                        fileSuffix: Env.staticUrl + "/" + article.editionId.toString()
-                      }),
-                  JsxRuntime.jsx(Pages_ReadArticle_Buttons.make, {
-                        aid: aid$1,
-                        likes: likes,
-                        commentsCount: comments.length
-                      }),
-                  JsxRuntime.jsx("section", {
-                        children: comments.length > 0 ? JsxRuntime.jsx("ul", {
-                                children: comments.map(function (comment) {
-                                      return JsxRuntime.jsxs("li", {
-                                                  children: [
-                                                    JsxRuntime.jsx("p", {
-                                                          children: comment.content
-                                                        }),
-                                                    JsxRuntime.jsxs("footer", {
-                                                          children: [
-                                                            comment.name + ", ",
-                                                            JsxRuntime.jsx(Components_Time.make, {
-                                                                  children: comment.createdAt
-                                                                })
-                                                          ],
-                                                          className: "text-sm text-neutral-500"
-                                                        })
-                                                  ],
-                                                  className: "border-b last:border-b-0 py-2"
-                                                }, comment.id.toString());
-                                    })
-                              }) : JsxRuntime.jsx("p", {
-                                children: "댓글이 없습니다.",
-                                className: "text-center p-6 text-neutral-500"
-                              }),
-                        className: "border-y mb-8"
-                      }),
-                  JsxRuntime.jsxs(Components_ArticleList.make, {
-                        children: [
-                          next !== undefined ? JsxRuntime.jsx(Components_ArticleList.Item.make, {
-                                  item: next,
-                                  icon: Caml_option.some(JsxRuntime.jsx(Icons.ArrowUp.make, {}))
-                                }) : JsxRuntime.jsx(Components_ArticleList.Placeholder.make, {
-                                  children: "(첫번째 글입니다)",
-                                  icon: Caml_option.some(JsxRuntime.jsx(Icons.ArrowUp.make, {}))
-                                }),
-                          prev !== undefined ? JsxRuntime.jsx(Components_ArticleList.Item.make, {
-                                  item: prev,
-                                  icon: Caml_option.some(JsxRuntime.jsx(Icons.ArrowDown.make, {}))
-                                }) : JsxRuntime.jsx(Components_ArticleList.Placeholder.make, {
-                                  children: "(마지막 글입니다)",
-                                  icon: Caml_option.some(JsxRuntime.jsx(Icons.ArrowDown.make, {}))
-                                })
-                        ]
-                      })
-                ]
-              });
+  var article = result[0];
+  if (article === undefined) {
+    return $$Navigation.notFound();
   }
-  throw result._0;
+  var match = result[1];
+  var next = match[4];
+  var prev = match[3];
+  var comments = match[2];
+  var likes = match[0];
+  return JsxRuntime.jsxs("main", {
+              children: [
+                JsxRuntime.jsxs("header", {
+                      children: [
+                        JsxRuntime.jsx("h1", {
+                              children: article.title,
+                              className: "font-bold text-3xl"
+                            }),
+                        JsxRuntime.jsxs("p", {
+                              children: [
+                                article.authorName + ", ",
+                                JsxRuntime.jsx(Components_Time.make, {
+                                      children: article.firstPublishedAt
+                                    }),
+                                article.firstPublishedAt !== article.lastPublishedAt ? JsxRuntime.jsxs(JsxRuntime.Fragment, {
+                                        children: [
+                                          " (개정: ",
+                                          JsxRuntime.jsx(Components_Time.make, {
+                                                children: article.lastPublishedAt
+                                              }),
+                                          ")"
+                                        ]
+                                      }) : null
+                              ],
+                              className: "text-xs"
+                            }),
+                        JsxRuntime.jsxs("p", {
+                              children: [
+                                JsxRuntime.jsx(Components_Stat.make, {
+                                      icon: JsxRuntime.jsx(Icons.Visibility.make, {}),
+                                      count: article.viewsCount
+                                    }),
+                                JsxRuntime.jsx(Components_Stat.make, {
+                                      icon: JsxRuntime.jsx(Icons.Favorite.make, {}),
+                                      count: likes.length
+                                    })
+                              ],
+                              className: "text-xs"
+                            })
+                      ]
+                    }),
+                JsxRuntime.jsx(Components_ArticleViewer.make, {
+                      article: article,
+                      files: match[1],
+                      fileSuffix: Env.staticUrl + "/" + article.editionId.toString()
+                    }),
+                JsxRuntime.jsx(Pages_ReadArticle_Buttons.make, {
+                      aid: aid$1,
+                      likes: likes,
+                      commentsCount: comments.length
+                    }),
+                JsxRuntime.jsx("section", {
+                      children: comments.length > 0 ? JsxRuntime.jsx("ul", {
+                              children: comments.map(function (comment) {
+                                    return JsxRuntime.jsxs("li", {
+                                                children: [
+                                                  JsxRuntime.jsx("p", {
+                                                        children: comment.content
+                                                      }),
+                                                  JsxRuntime.jsxs("footer", {
+                                                        children: [
+                                                          comment.name + ", ",
+                                                          JsxRuntime.jsx(Components_Time.make, {
+                                                                children: comment.createdAt
+                                                              })
+                                                        ],
+                                                        className: "text-sm text-neutral-500"
+                                                      })
+                                                ],
+                                                className: "border-b last:border-b-0 py-2"
+                                              }, comment.id.toString());
+                                  })
+                            }) : JsxRuntime.jsx("p", {
+                              children: "댓글이 없습니다.",
+                              className: "text-center p-6 text-neutral-500"
+                            }),
+                      className: "border-y mb-8"
+                    }),
+                JsxRuntime.jsxs(Components_ArticleList.make, {
+                      children: [
+                        next !== undefined ? JsxRuntime.jsx(Components_ArticleList.Item.make, {
+                                item: next,
+                                icon: Caml_option.some(JsxRuntime.jsx(Icons.ArrowUp.make, {}))
+                              }) : JsxRuntime.jsx(Components_ArticleList.Placeholder.make, {
+                                children: "(첫번째 글입니다)",
+                                icon: Caml_option.some(JsxRuntime.jsx(Icons.ArrowUp.make, {}))
+                              }),
+                        prev !== undefined ? JsxRuntime.jsx(Components_ArticleList.Item.make, {
+                                item: prev,
+                                icon: Caml_option.some(JsxRuntime.jsx(Icons.ArrowDown.make, {}))
+                              }) : JsxRuntime.jsx(Components_ArticleList.Placeholder.make, {
+                                children: "(마지막 글입니다)",
+                                icon: Caml_option.some(JsxRuntime.jsx(Icons.ArrowDown.make, {}))
+                              })
+                      ]
+                    })
+              ]
+            });
 }
 
 var Pages_ReadArticle$default = $$default;
@@ -175,20 +171,17 @@ async function generateMetadata(props) {
   if (aid === undefined) {
     return $$Navigation.notFound();
   }
-  var error = await query(aid);
-  if (error.TAG === "Ok") {
-    var article = error._0[0];
-    if (article === undefined) {
-      return $$Navigation.notFound();
-    }
-    var title = article.title;
-    var description = article.content.substring(0, 100);
-    return {
-            title: title,
-            description: description
-          };
+  var match = await query(aid);
+  var article = match[0];
+  if (article === undefined) {
+    return $$Navigation.notFound();
   }
-  throw error._0;
+  var title = article.title;
+  var description = article.content.substring(0, 100);
+  return {
+          title: title,
+          description: description
+        };
 }
 
 var $$default$1 = Pages_ReadArticle$default;

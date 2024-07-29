@@ -7,16 +7,13 @@ import * as Pages_ListArticles__sql from "./Pages_ListArticles__sql.res.js";
 
 async function $$default(param) {
   var articles = await Db.query(Pages_ListArticles__sql.Query1.many, undefined);
-  if (articles.TAG === "Ok") {
-    return JsxRuntime.jsx(Components_ArticleList.make, {
-                children: articles._0.map(function (article) {
-                      return JsxRuntime.jsx(Components_ArticleList.Item.make, {
-                                  item: article
-                                }, article.id.toString());
-                    })
-              });
-  }
-  throw articles._0;
+  return JsxRuntime.jsx(Components_ArticleList.make, {
+              children: articles.map(function (article) {
+                    return JsxRuntime.jsx(Components_ArticleList.Item.make, {
+                                item: article
+                              }, article.id.toString());
+                  })
+            });
 }
 
 var Pages_ListArticles$default = $$default;

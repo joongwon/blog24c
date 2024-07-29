@@ -69,6 +69,7 @@ let optionAwait = async option =>
 let optionFlatten = option => option->Option.flatMap(x => x)
 let resultToOption = result => result->Result.mapOr(None, x => Some(x))
 let optionResultFlatten = option => option->Option.flatMap(resultToOption)
+let resultFlatten = result => result->Result.flatMap(x => x)
 
 let refresh = async () => {
   let refreshToken = getRefreshToken()
@@ -84,7 +85,6 @@ let refresh = async () => {
     await userId
     ->Option.map(getUserById)
     ->optionAwait
-    ->Promise.thenResolve(optionResultFlatten)
     ->Promise.thenResolve(optionFlatten)
   let res =
     await profile
@@ -94,77 +94,97 @@ let refresh = async () => {
   res
 }
 
-type tryLoginResult =
+type tryLoginSuccess =
   | Register({code: string, naverName: string})
   | Login(loginResult)
 
+type tryLoginError =
+  | Unauthorized
+  | InternalServerError
+
 let tryLogin = async code => {
-  // 네이버 access token을 받아오기
-  let client_id = Env.naverClientId
-  let client_secret = Env.naverClientSecret
-  let res = await Webapi.Fetch.fetchWithInit(
-    "https://nid.naver.com/oauth2.0/token",
-    Webapi.Fetch.RequestInit.make(
-      ~method_=Webapi.Fetch.Post,
-      ~headers=Webapi.Fetch.HeadersInit.make({
-        "Content-Type": "application/x-www-form-urlencoded",
-      }),
-      ~body=Webapi.Fetch.BodyInit.make(
-        Webapi.Url.URLSearchParams.makeWithArray([
-          ("grant_type", "authorization_code"),
-          ("code", code),
-          ("state", "state"),
-          ("client_id", client_id),
-          ("client_secret", client_secret),
-        ])->Webapi.Url.URLSearchParams.toString,
+  let getNaverAccessToken = async () => {
+    // 네이버 access token을 받아오기
+    let client_id = Env.naverClientId
+    let client_secret = Env.naverClientSecret
+    let res = await Webapi.Fetch.fetchWithInit(
+      "https://nid.naver.com/oauth2.0/token",
+      Webapi.Fetch.RequestInit.make(
+        ~method_=Webapi.Fetch.Post,
+        ~headers=Webapi.Fetch.HeadersInit.make({
+          "Content-Type": "application/x-www-form-urlencoded",
+        }),
+        ~body=Webapi.Fetch.BodyInit.make(
+          Webapi.Url.URLSearchParams.makeWithArray([
+            ("grant_type", "authorization_code"),
+            ("code", code),
+            ("state", "state"),
+            ("client_id", client_id),
+            ("client_secret", client_secret),
+          ])->Webapi.Url.URLSearchParams.toString,
+        ),
+        (),
       ),
-      (),
-    ),
-  )
-  let data = await res->Webapi.Fetch.Response.json
-  let access_token =
+    )
+    let data = await res->Webapi.Fetch.Response.json
     data
     ->Js.Json.decodeObject
     ->Option.flatMap(obj => obj->Js.Dict.get("access_token"))
     ->Option.flatMap(obj => obj->Js.Json.decodeString)
-    ->Option.getExn(~message=`${__LOC__}: access_token not found`)
-
-  // 네이버 프로필을 받아오기
-  let data = await Webapi.Fetch.fetchWithInit(
-    "https://openapi.naver.com/v1/nid/me",
-    Webapi.Fetch.RequestInit.make(
-      ~headers=Webapi.Fetch.HeadersInit.make({
-        "Authorization": "Bearer " ++ access_token,
-      }),
-      (),
-    ),
-  )->Promise.then(Webapi.Fetch.Response.json)
-  let response =
-    data
-    ->Js.Json.decodeObject
-    ->Option.flatMap(obj => obj->Js.Dict.get("response"))
-    ->Option.flatMap(obj => obj->Js.Json.decodeObject)
-  let naverId =
-    response
-    ->Option.flatMap(obj => obj->Js.Dict.get("id"))
-    ->Option.flatMap(obj => obj->Js.Json.decodeString)
-    ->Option.getExn(~message=`${__LOC__}: naverId not found`)
-  let naverName =
-    response
-    ->Option.flatMap(obj => obj->Js.Dict.get("nickname"))
-    ->Option.flatMap(obj => obj->Js.Json.decodeString)
-    ->Option.getOr("")
-
-  let profile = await getUserByNaverId(naverId)->Promise.thenResolve(Result.getExn)
-  switch profile {
-  | Some(profile) =>
-    let loginResult = await login((profile :> profile))->Promise.thenResolve(Result.getExn)
-    Login(loginResult)
-  | None =>
-    let redis = await Db.getRedis()
-    let registerCode = "registerCode:" ++ randomUUID()
-    Console.log2("set registerCode", registerCode)
-    await redis->Redis.set(registerCode, naverId, {ex: 10 * 60})
-    Register({code: registerCode, naverName})
+    ->Option.mapOr(Error(Unauthorized), x => Ok(x))
   }
+
+  let getNaverProfile = async accessToken => {
+    // 네이버 프로필을 받아오기
+    let data = await Webapi.Fetch.fetchWithInit(
+      "https://openapi.naver.com/v1/nid/me",
+      Webapi.Fetch.RequestInit.make(
+        ~headers=Webapi.Fetch.HeadersInit.make({
+          "Authorization": "Bearer " ++ accessToken,
+        }),
+        (),
+      ),
+    )->Promise.then(Webapi.Fetch.Response.json)
+    let response =
+      data
+      ->Js.Json.decodeObject
+      ->Option.flatMap(obj => obj->Js.Dict.get("response"))
+      ->Option.flatMap(obj => obj->Js.Json.decodeObject)
+    let naverId =
+      response
+      ->Option.flatMap(obj => obj->Js.Dict.get("id"))
+      ->Option.flatMap(obj => obj->Js.Json.decodeString)
+    let naverName =
+      response
+      ->Option.flatMap(obj => obj->Js.Dict.get("nickname"))
+      ->Option.flatMap(obj => obj->Js.Json.decodeString)
+      ->Option.getOr("")
+
+    naverId->Option.mapOr(Error(Unauthorized), x => Ok((x, naverName)))
+  }
+
+  let loginOrRegister = async (profile, naverId, naverName) => {
+    switch profile {
+    | Some(profile) =>
+      let loginResult = await login(profile)->Promise.thenResolve(Result.getExn)
+      Login(loginResult)
+    | None =>
+      let redis = await Db.getRedis()
+      let registerCode = "registerCode:" ++ randomUUID()
+      Console.log2("set registerCode", registerCode)
+      await redis->Redis.set(registerCode, naverId, {ex: 10 * 60})
+      Register({code: registerCode, naverName})
+    }
+  }
+
+  let accessToken = await getNaverAccessToken()
+  let naverProfile =
+    await accessToken->Result.map(getNaverProfile)->resultAwait->Promise.thenResolve(resultFlatten)
+  await naverProfile
+  ->Result.map(async ((naverId, naverName)) => {
+    let profile = await getUserByNaverId(naverId)
+    let res = await loginOrRegister((profile :> option<profile>), naverId, naverName)
+    res
+  })
+  ->resultAwait
 }

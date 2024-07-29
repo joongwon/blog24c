@@ -16,11 +16,11 @@ let tx = async f => {
     let result = await f(client)
     (await client->PgTyped.Pg.Client.query("COMMIT"))->ignore
     await client->release
-    result->Ok
+    result
   } catch {
   | e => {
       await client->release
-      e->Error
+      raise(e)
     }
   }
 }
@@ -31,11 +31,11 @@ let query = async (f, param) => {
   try {
     let result = await client->f(param)
     await client->release
-    result->Ok
+    result
   } catch {
   | e => {
       await client->release
-      e->Error
+      raise(e)
     }
   }
 }

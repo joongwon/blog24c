@@ -99,80 +99,118 @@ function optionResultFlatten(option) {
   return Core__Option.flatMap(option, resultToOption);
 }
 
+function resultFlatten(result) {
+  return Core__Result.flatMap(result, (function (x) {
+                return x;
+              }));
+}
+
 async function refresh() {
   var refreshToken = getRefreshToken();
   var userId = await optionAwait(Core__Option.map(refreshToken, (async function (refreshToken) {
                 var redis = await Db.getRedis();
                 return await Redis.getDel(redis, refreshToken);
               }))).then(optionFlatten);
-  var profile = await optionAwait(Core__Option.map(userId, getUserById)).then(optionResultFlatten).then(optionFlatten);
+  var profile = await optionAwait(Core__Option.map(userId, getUserById)).then(optionFlatten);
   return await optionAwait(Core__Option.map(profile, (function (profile) {
                       return login(profile);
                     }))).then(optionResultFlatten);
 }
 
 async function tryLogin(code) {
-  var res = await fetch("https://nid.naver.com/oauth2.0/token", Webapi__Fetch.RequestInit.make("Post", {
-            "Content-Type": "application/x-www-form-urlencoded"
-          }, Caml_option.some(new URLSearchParams([
-                      [
-                        "grant_type",
-                        "authorization_code"
-                      ],
-                      [
-                        "code",
-                        code
-                      ],
-                      [
-                        "state",
-                        "state"
-                      ],
-                      [
-                        "client_id",
-                        Env.naverClientId
-                      ],
-                      [
-                        "client_secret",
-                        Env.naverClientSecret
-                      ]
-                    ]).toString()), undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined));
-  var data = await res.json();
-  var access_token = Core__Option.getExn(Core__Option.flatMap(Core__Option.flatMap(Js_json.decodeObject(data), (function (obj) {
-                  return Js_dict.get(obj, "access_token");
-                })), Js_json.decodeString), "File \"Actions.res\", line 130, characters 32-39" + ": access_token not found");
-  var data$1 = await fetch("https://openapi.naver.com/v1/nid/me", Webapi__Fetch.RequestInit.make(undefined, {
-              Authorization: "Bearer " + access_token
-            }, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined)).then(function (prim) {
-        return prim.json();
-      });
-  var response = Core__Option.flatMap(Core__Option.flatMap(Js_json.decodeObject(data$1), (function (obj) {
-              return Js_dict.get(obj, "response");
-            })), Js_json.decodeObject);
-  var naverId = Core__Option.getExn(Core__Option.flatMap(Core__Option.flatMap(response, (function (obj) {
-                  return Js_dict.get(obj, "id");
-                })), Js_json.decodeString), "File \"Actions.res\", line 151, characters 32-39" + ": naverId not found");
-  var naverName = Core__Option.getOr(Core__Option.flatMap(Core__Option.flatMap(response, (function (obj) {
-                  return Js_dict.get(obj, "nickname");
-                })), Js_json.decodeString), "");
-  var profile = await getUserByNaverId(naverId).then(Core__Result.getExn);
-  if (profile !== undefined) {
-    var loginResult = await login(profile).then(Core__Result.getExn);
+  var getNaverAccessToken = async function () {
+    var res = await fetch("https://nid.naver.com/oauth2.0/token", Webapi__Fetch.RequestInit.make("Post", {
+              "Content-Type": "application/x-www-form-urlencoded"
+            }, Caml_option.some(new URLSearchParams([
+                        [
+                          "grant_type",
+                          "authorization_code"
+                        ],
+                        [
+                          "code",
+                          code
+                        ],
+                        [
+                          "state",
+                          "state"
+                        ],
+                        [
+                          "client_id",
+                          Env.naverClientId
+                        ],
+                        [
+                          "client_secret",
+                          Env.naverClientSecret
+                        ]
+                      ]).toString()), undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined));
+    var data = await res.json();
+    return Core__Option.mapOr(Core__Option.flatMap(Core__Option.flatMap(Js_json.decodeObject(data), (function (obj) {
+                          return Js_dict.get(obj, "access_token");
+                        })), Js_json.decodeString), {
+                TAG: "Error",
+                _0: "Unauthorized"
+              }, (function (x) {
+                  return {
+                          TAG: "Ok",
+                          _0: x
+                        };
+                }));
+  };
+  var getNaverProfile = async function (accessToken) {
+    var data = await fetch("https://openapi.naver.com/v1/nid/me", Webapi__Fetch.RequestInit.make(undefined, {
+                Authorization: "Bearer " + accessToken
+              }, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined)).then(function (prim) {
+          return prim.json();
+        });
+    var response = Core__Option.flatMap(Core__Option.flatMap(Js_json.decodeObject(data), (function (obj) {
+                return Js_dict.get(obj, "response");
+              })), Js_json.decodeObject);
+    var naverId = Core__Option.flatMap(Core__Option.flatMap(response, (function (obj) {
+                return Js_dict.get(obj, "id");
+              })), Js_json.decodeString);
+    var naverName = Core__Option.getOr(Core__Option.flatMap(Core__Option.flatMap(response, (function (obj) {
+                    return Js_dict.get(obj, "nickname");
+                  })), Js_json.decodeString), "");
+    return Core__Option.mapOr(naverId, {
+                TAG: "Error",
+                _0: "Unauthorized"
+              }, (function (x) {
+                  return {
+                          TAG: "Ok",
+                          _0: [
+                            x,
+                            naverName
+                          ]
+                        };
+                }));
+  };
+  var loginOrRegister = async function (profile, naverId, naverName) {
+    if (profile !== undefined) {
+      var loginResult = await login(profile).then(Core__Result.getExn);
+      return {
+              TAG: "Login",
+              _0: loginResult
+            };
+    }
+    var redis = await Db.getRedis();
+    var registerCode = "registerCode:" + $$Crypto.randomUUID();
+    console.log("set registerCode", registerCode);
+    await redis.set(registerCode, naverId, {
+          ex: 600
+        });
     return {
-            TAG: "Login",
-            _0: loginResult
+            TAG: "Register",
+            code: registerCode,
+            naverName: naverName
           };
-  }
-  var redis = await Db.getRedis();
-  var registerCode = "registerCode:" + $$Crypto.randomUUID();
-  console.log("set registerCode", registerCode);
-  await redis.set(registerCode, naverId, {
-        ex: 600
-      });
-  return {
-          TAG: "Register",
-          code: registerCode,
-          naverName: naverName
-        };
+  };
+  var accessToken = await getNaverAccessToken();
+  var naverProfile = await resultAwait(Core__Result.map(accessToken, getNaverProfile)).then(resultFlatten);
+  return await resultAwait(Core__Result.map(naverProfile, (async function (param) {
+                    var naverId = param[0];
+                    var profile = await getUserByNaverId(naverId);
+                    return await loginOrRegister(profile, naverId, param[1]);
+                  })));
 }
 
 export {
@@ -183,6 +221,7 @@ export {
   optionFlatten ,
   resultToOption ,
   optionResultFlatten ,
+  resultFlatten ,
   refresh ,
   tryLogin ,
 }

@@ -9,7 +9,7 @@ let default = async () => {
     JOIN article_stats s ON a.id = s.id
     ORDER BY first_published_at DESC;
   `)->Db.query() {
-  | Ok(articles) =>
+  | articles =>
     module ArticleList = Components_ArticleList
     <ArticleList>
       {articles
@@ -18,6 +18,5 @@ let default = async () => {
       )
       ->React.array}
     </ArticleList>
-  | Error(error) => raise(error)
   }
 }
