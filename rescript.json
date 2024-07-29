@@ -14,7 +14,9 @@
     "@rescript/core",
     "@rescript/react",
     "pgtyped-rescript",
-    "rescript-nodejs"
+    "rescript-nodejs",
+    "@glennsl/rescript-fetch",
+    "rescript-webapi"
   ],
   "bsc-flags": [
     "-open RescriptCore"

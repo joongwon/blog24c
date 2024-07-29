@@ -54,6 +54,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@glennsl/rescript-fetch@npm:^0.2.1":
+  version: 0.2.1
+  resolution: "@glennsl/rescript-fetch@npm:0.2.1"
+  checksum: 10c0/cee4ae1b2a27ae36c06eec30e08d777c9512d19a80e58b117b464cc27e8eea734e1f5994ed815d6559f3caaaa7c051c6f90d7016c19afe61741aff41d53a7540
+  languageName: node
+  linkType: hard
+
 "@humanwhocodes/config-array@npm:^0.11.14":
   version: 0.11.14
   resolution: "@humanwhocodes/config-array@npm:0.11.14"
@@ -461,6 +468,23 @@ __metadata:
   version: 0.7.34
   resolution: "@types/ms@npm:0.7.34"
   checksum: 10c0/ac80bd90012116ceb2d188fde62d96830ca847823e8ca71255616bc73991aa7d9f057b8bfab79e8ee44ffefb031ddd1bcce63ea82f9e66f7c31ec02d2d823ccc
+  languageName: node
+  linkType: hard
+
+"@types/prop-types@npm:*":
+  version: 15.7.12
+  resolution: "@types/prop-types@npm:15.7.12"
+  checksum: 10c0/1babcc7db6a1177779f8fde0ccc78d64d459906e6ef69a4ed4dd6339c920c2e05b074ee5a92120fe4e9d9f1a01c952f843ebd550bee2332fc2ef81d1706878f8
+  languageName: node
+  linkType: hard
+
+"@types/react@npm:^18.3.3":
+  version: 18.3.3
+  resolution: "@types/react@npm:18.3.3"
+  dependencies:
+    "@types/prop-types": "npm:*"
+    csstype: "npm:^3.0.2"
+  checksum: 10c0/fe455f805c5da13b89964c3d68060cebd43e73ec15001a68b34634604a78140e6fc202f3f61679b9d809dde6d7a7c2cb3ed51e0fd1462557911db09879b55114
   languageName: node
   linkType: hard
 
@@ -883,8 +907,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "blog2024c@workspace:."
   dependencies:
+    "@glennsl/rescript-fetch": "npm:^0.2.1"
     "@rescript/core": "npm:1.5.2"
     "@rescript/react": "npm:^0.13.0"
+    "@types/react": "npm:^18.3.3"
     autoprefixer: "npm:^10.4.19"
     dotenv-cli: "npm:^7.4.2"
     eslint: "npm:^8"
@@ -903,6 +929,7 @@ __metadata:
     rescript: "npm:11.1.2"
     rescript-embed-lang: "npm:^0.5.5"
     rescript-nodejs: "npm:^16.1.0"
+    rescript-webapi: "npm:^0.9.1"
     tailwindcss: "npm:^3.4.1"
     typescript: "npm:^5.5.4"
   languageName: unknown
@@ -1194,6 +1221,13 @@ __metadata:
   bin:
     cssesc: bin/cssesc
   checksum: 10c0/6bcfd898662671be15ae7827120472c5667afb3d7429f1f917737f3bf84c4176003228131b643ae74543f17a394446247df090c597bb9a728cce298606ed0aa7
+  languageName: node
+  linkType: hard
+
+"csstype@npm:^3.0.2":
+  version: 3.1.3
+  resolution: "csstype@npm:3.1.3"
+  checksum: 10c0/80c089d6f7e0c5b2bd83cf0539ab41474198579584fa10d86d0cafe0642202343cbc119e076a0b1aece191989477081415d66c9fefbf3c957fc2fc4b7009f248
   languageName: node
   linkType: hard
 
@@ -4667,6 +4701,13 @@ __metadata:
   version: 16.1.0
   resolution: "rescript-nodejs@npm:16.1.0"
   checksum: 10c0/2ea271dbddebdceec79bf5ee6089c15474f2c014cb22c1cc39d43ef27fd363fcb1cd8e1244d0cb998cd6b426d7474e3055e41277951fb01ee1eeecf68bbe01ab
+  languageName: node
+  linkType: hard
+
+"rescript-webapi@npm:^0.9.1":
+  version: 0.9.1
+  resolution: "rescript-webapi@npm:0.9.1"
+  checksum: 10c0/1482e542322b54d62f0d6928c3c68eb24f4cbeee4874c853c6c7415a1c04ae4e15f1e92107f66dcfc4ab35ab0754c82122c0207a816ff9b206aab0435915d475
   languageName: node
   linkType: hard
 

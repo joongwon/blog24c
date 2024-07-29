@@ -4,9 +4,9 @@ import * as Core__Option from "@rescript/core/src/Core__Option.res.js";
 import * as RescriptCore from "@rescript/core/src/RescriptCore.res.js";
 import * as PgtypedRescriptRuntime from "pgtyped-rescript-runtime";
 
-var query1IR = {"usedParamSet":{"id":true},"params":[{"name":"id","required":true,"transform":{"type":"scalar"},"locs":[{"a":44,"b":47}]}],"statement":"SELECT id, name, role FROM users WHERE id = :id!"};
+var getUserByNaverIdIR = {"usedParamSet":{"naverId":true},"params":[{"name":"naverId","required":true,"transform":{"type":"scalar"},"locs":[{"a":50,"b":58}]}],"statement":"SELECT id, name, role FROM users WHERE naver_id = :naverId!"};
 
-var query = new PgtypedRescriptRuntime.PreparedQuery(query1IR);
+var query = new PgtypedRescriptRuntime.PreparedQuery(getUserByNaverIdIR);
 
 function many(client, params) {
   return query.run(params, client);
@@ -34,19 +34,62 @@ async function execute(client, params) {
   await query.run(params, client);
 }
 
-var Query1 = {
+var GetUserByNaverId = {
   many: many,
   one: one,
   expectOne: expectOne,
   execute: execute
 };
 
-function query1(params, client) {
+function getUserByNaverId(params, client) {
   return query.run(params, client);
 }
 
+var getUserByIdIR = {"usedParamSet":{"id":true},"params":[{"name":"id","required":true,"transform":{"type":"scalar"},"locs":[{"a":44,"b":47}]}],"statement":"SELECT id, name, role FROM users WHERE id = :id!"};
+
+var query$1 = new PgtypedRescriptRuntime.PreparedQuery(getUserByIdIR);
+
+function many$1(client, params) {
+  return query$1.run(params, client);
+}
+
+async function one$1(client, params) {
+  var match = await query$1.run(params, client);
+  if (match.length !== 1) {
+    return ;
+  } else {
+    return match[0];
+  }
+}
+
+async function expectOne$1(client, params, errorMessage) {
+  var match = await query$1.run(params, client);
+  if (match.length !== 1) {
+    return RescriptCore.panic(Core__Option.getOr(errorMessage, "More or less than one item was returned"));
+  } else {
+    return match[0];
+  }
+}
+
+async function execute$1(client, params) {
+  await query$1.run(params, client);
+}
+
+var GetUserById = {
+  many: many$1,
+  one: one$1,
+  expectOne: expectOne$1,
+  execute: execute$1
+};
+
+function getUserById(params, client) {
+  return query$1.run(params, client);
+}
+
 export {
-  Query1 ,
-  query1 ,
+  GetUserByNaverId ,
+  getUserByNaverId ,
+  GetUserById ,
+  getUserById ,
 }
 /* query Not a pure module */

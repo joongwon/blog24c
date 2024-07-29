@@ -51,10 +51,10 @@ module ContentTypeOption = {
   let make = (~contentType, ~setContentType, ~optionValue: renderer) => {
     <button
       className={if contentType === optionValue {
-        "bg-gray-200 "
+        "bg-neutral-200 "
       } else {
         "bg-white "
-      } ++ "px-2 py-2 text-xs first:rounded-l-xl last:rounded-r-xl border border-gray-300 hover:bg-gray-300"}
+      } ++ "px-2 py-2 text-xs first:rounded-l-xl last:rounded-r-xl border border-neutral-300 hover:bg-neutral-300"}
       onClick={_ => setContentType(_ => optionValue)}>
       {(optionValue :> string)->React.string}
     </button>

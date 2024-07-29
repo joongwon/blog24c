@@ -60,8 +60,8 @@ function Components_ArticleViewer$ContentTypeOption(props) {
   return JsxRuntime.jsx("button", {
               children: optionValue,
               className: (
-                props.contentType === optionValue ? "bg-gray-200 " : "bg-white "
-              ) + "px-2 py-2 text-xs first:rounded-l-xl last:rounded-r-xl border border-gray-300 hover:bg-gray-300",
+                props.contentType === optionValue ? "bg-neutral-200 " : "bg-white "
+              ) + "px-2 py-2 text-xs first:rounded-l-xl last:rounded-r-xl border border-neutral-300 hover:bg-neutral-300",
               onClick: (function (param) {
                   setContentType(function (param) {
                         return optionValue;

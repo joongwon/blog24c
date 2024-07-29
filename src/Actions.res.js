@@ -4,10 +4,16 @@
 import * as Db from "./Db.res.js";
 import * as Env from "./Env.res.js";
 import * as Jwt from "./lib/Jwt.res.js";
+import * as Redis from "./lib/Redis.res.js";
 import * as $$Crypto from "crypto";
+import * as Js_dict from "rescript/lib/es6/js_dict.js";
+import * as Js_json from "rescript/lib/es6/js_json.js";
+import * as Caml_option from "rescript/lib/es6/caml_option.js";
 import * as Actions__sql from "./Actions__sql.res.js";
 import * as Core__Option from "@rescript/core/src/Core__Option.res.js";
+import * as Core__Result from "@rescript/core/src/Core__Result.res.js";
 import * as $$Headers from "next/headers";
+import * as Webapi__Fetch from "rescript-webapi/src/Webapi/Webapi__Fetch.res.js";
 
 function getRefreshToken() {
   return Core__Option.map($$Headers.cookies().get("refreshToken"), (function (cookie) {
@@ -24,76 +30,160 @@ function setRefreshToken(refreshToken) {
       });
 }
 
-async function login(userId) {
-  var profile = await Db.query(Actions__sql.Query1.one, {
-        id: userId
-      });
-  if (profile.TAG === "Ok") {
-    var profile$1 = profile._0;
-    if (profile$1 === undefined) {
-      return {
-              TAG: "Error",
-              _0: "User not found"
-            };
-    }
-    var err = await Jwt.sign({
-          id: userId
-        }, Env.jwtSecret, {
-          expiresIn: "1h"
-        });
-    if (err.TAG === "Ok") {
-      var refreshToken = "refreshToken:" + $$Crypto.randomUUID();
-      var redis = await Db.getRedis();
-      await redis.set(refreshToken, userId, {
-            ex: 604800
-          });
-      setRefreshToken(refreshToken);
-      return {
-              TAG: "Ok",
-              _0: {
-                accessToken: err._0,
-                profile: {
-                  id: profile$1.id,
-                  name: profile$1.name,
-                  role: profile$1.role
-                }
-              }
-            };
-    }
-    console.log(err._0);
+async function resultAwait(res) {
+  if (res.TAG === "Ok") {
+    return {
+            TAG: "Ok",
+            _0: await res._0
+          };
+  } else {
     return {
             TAG: "Error",
-            _0: "Failed to sign token"
+            _0: res._0
           };
   }
-  console.log(profile._0);
-  return {
-          TAG: "Error",
-          _0: "Failed to fetch user profile"
-        };
+}
+
+async function getUserById(id) {
+  return await Db.query(Actions__sql.GetUserById.one, {
+              id: id
+            });
+}
+
+async function getUserByNaverId(naverId) {
+  return await Db.query(Actions__sql.GetUserByNaverId.one, {
+              naverId: naverId
+            });
+}
+
+async function login(profile) {
+  var token = await Jwt.sign({
+        id: profile.id
+      }, Env.jwtSecret, {
+        expiresIn: "1h"
+      });
+  return await resultAwait(Core__Result.map(token, (async function (accessToken) {
+                    var refreshToken = "refreshToken:" + $$Crypto.randomUUID();
+                    var redis = await Db.getRedis();
+                    await redis.set(refreshToken, profile.id, {
+                          ex: 604800
+                        });
+                    setRefreshToken(refreshToken);
+                    return {
+                            accessToken: accessToken,
+                            profile: profile
+                          };
+                  })));
+}
+
+async function optionAwait(option) {
+  if (option !== undefined) {
+    return Caml_option.some(await Caml_option.valFromOption(option));
+  }
+  
+}
+
+function optionFlatten(option) {
+  return Core__Option.flatMap(option, (function (x) {
+                return x;
+              }));
+}
+
+function resultToOption(result) {
+  return Core__Result.mapOr(result, undefined, (function (x) {
+                return Caml_option.some(x);
+              }));
+}
+
+function optionResultFlatten(option) {
+  return Core__Option.flatMap(option, resultToOption);
 }
 
 async function refresh() {
   var refreshToken = getRefreshToken();
-  if (refreshToken === undefined) {
-    return ;
+  var userId = await optionAwait(Core__Option.map(refreshToken, (async function (refreshToken) {
+                var redis = await Db.getRedis();
+                return await Redis.getDel(redis, refreshToken);
+              }))).then(optionFlatten);
+  var profile = await optionAwait(Core__Option.map(userId, getUserById)).then(optionResultFlatten).then(optionFlatten);
+  return await optionAwait(Core__Option.map(profile, (function (profile) {
+                      return login(profile);
+                    }))).then(optionResultFlatten);
+}
+
+async function tryLogin(code) {
+  var res = await fetch("https://nid.naver.com/oauth2.0/token", Webapi__Fetch.RequestInit.make("Post", {
+            "Content-Type": "application/x-www-form-urlencoded"
+          }, Caml_option.some(new URLSearchParams([
+                      [
+                        "grant_type",
+                        "authorization_code"
+                      ],
+                      [
+                        "code",
+                        code
+                      ],
+                      [
+                        "state",
+                        "state"
+                      ],
+                      [
+                        "client_id",
+                        Env.naverClientId
+                      ],
+                      [
+                        "client_secret",
+                        Env.naverClientSecret
+                      ]
+                    ]).toString()), undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined));
+  var data = await res.json();
+  var access_token = Core__Option.getExn(Core__Option.flatMap(Core__Option.flatMap(Js_json.decodeObject(data), (function (obj) {
+                  return Js_dict.get(obj, "access_token");
+                })), Js_json.decodeString), "File \"Actions.res\", line 130, characters 32-39" + ": access_token not found");
+  var data$1 = await fetch("https://openapi.naver.com/v1/nid/me", Webapi__Fetch.RequestInit.make(undefined, {
+              Authorization: "Bearer " + access_token
+            }, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined)).then(function (prim) {
+        return prim.json();
+      });
+  var response = Core__Option.flatMap(Core__Option.flatMap(Js_json.decodeObject(data$1), (function (obj) {
+              return Js_dict.get(obj, "response");
+            })), Js_json.decodeObject);
+  var naverId = Core__Option.getExn(Core__Option.flatMap(Core__Option.flatMap(response, (function (obj) {
+                  return Js_dict.get(obj, "id");
+                })), Js_json.decodeString), "File \"Actions.res\", line 151, characters 32-39" + ": naverId not found");
+  var naverName = Core__Option.getOr(Core__Option.flatMap(Core__Option.flatMap(response, (function (obj) {
+                  return Js_dict.get(obj, "nickname");
+                })), Js_json.decodeString), "");
+  var profile = await getUserByNaverId(naverId).then(Core__Result.getExn);
+  if (profile !== undefined) {
+    var loginResult = await login(profile).then(Core__Result.getExn);
+    return {
+            TAG: "Login",
+            _0: loginResult
+          };
   }
   var redis = await Db.getRedis();
-  var userId = await redis.getDel("refreshToken:" + refreshToken);
-  if (userId === undefined) {
-    return ;
-  }
-  var res = await login(userId);
-  if (res.TAG === "Ok") {
-    return res._0;
-  }
-  console.log(res._0);
+  var registerCode = "registerCode:" + $$Crypto.randomUUID();
+  console.log("set registerCode", registerCode);
+  await redis.set(registerCode, naverId, {
+        ex: 600
+      });
+  return {
+          TAG: "Register",
+          code: registerCode,
+          naverName: naverName
+        };
 }
 
 export {
   getRefreshToken ,
   setRefreshToken ,
-  login ,
+  resultAwait ,
+  optionAwait ,
+  optionFlatten ,
+  resultToOption ,
+  optionResultFlatten ,
   refresh ,
+  tryLogin ,
 }
 /* Db Not a pure module */

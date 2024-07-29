@@ -1,8 +1,8 @@
 @react.component
-let make = (~icon, ~alt, ~count, ~size="size-5") => {
+let make = (~icon, ~count) => {
   if count > 0 {
-    <span className="mr-1 text-gray-500 whitespace-nowrap min-w-fit inline-block">
-      <img src={icon} alt className={`inline ${size}`} />
+    <span className="mr-1 text-neutral-500 whitespace-nowrap min-w-fit inline-block">
+      icon
       {count->Int.toString->React.string}
     </span>
   } else {

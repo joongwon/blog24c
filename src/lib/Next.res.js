@@ -9,7 +9,11 @@ var $$Headers = {
 
 var Link = {};
 
-var $$Navigation = {};
+var Router = {};
+
+var $$Navigation = {
+  Router: Router
+};
 
 export {
   $$Headers ,

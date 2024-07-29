@@ -25,7 +25,16 @@ module Link = {
 }
 
 module Navigation = {
+  module Router = {
+    type t
+    @send external push: (t, string) => unit = "push"
+    @send external replace: (t, string) => unit = "replace"
+  }
+
   // thorws error and never return, but rescript does not support bottom type...
-  @moodule("next/navigation")
-  external notFound: unit => React.element = "notFound"
+  @module("next/navigation")
+  external notFound: unit => 'a = "notFound"
+
+  @module("next/navigation")
+  external useRouter: unit => Router.t = "useRouter"
 }

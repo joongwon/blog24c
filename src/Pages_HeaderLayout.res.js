@@ -2,17 +2,21 @@
 
 import Link from "next/link";
 import * as JsxRuntime from "react/jsx-runtime";
+import * as Pages_HeaderLayout_AuthMenu from "./Pages_HeaderLayout_AuthMenu.res.js";
 
 function Pages_HeaderLayout$default(props) {
   return JsxRuntime.jsxs("main", {
               children: [
-                JsxRuntime.jsx("header", {
-                      children: JsxRuntime.jsx(Link, {
-                            href: "/",
-                            children: "왼손잡이해방연대 아지트",
-                            className: "text-2xl font-bold"
-                          }),
-                      className: "flex justify-between bg-gray-200 my-4 p-4"
+                JsxRuntime.jsxs("header", {
+                      children: [
+                        JsxRuntime.jsx(Link, {
+                              href: "/",
+                              children: "왼손잡이해방연대 아지트",
+                              className: "text-2xl font-bold"
+                            }),
+                        JsxRuntime.jsx(Pages_HeaderLayout_AuthMenu.make, {})
+                      ],
+                      className: "flex justify-between bg-neutral-200 my-4 p-4"
                     }),
                 props.children
               ],

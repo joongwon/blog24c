@@ -10,3 +10,11 @@ let jwtSecret =
   env->Dict.get("JWT_SECRET")->Option.getExn(~message="JWT_SECRET environment variable is not set")
 let staticUrl =
   env->Dict.get("STATIC_URL")->Option.getExn(~message="STATIC_URL environment variable is not set")
+let naverClientId =
+  env
+  ->Dict.get("NAVER_CLIENT_ID")
+  ->Option.getExn(~message="NAVER_CLIENT_ID environment variable is not set")
+let naverClientSecret =
+  env
+  ->Dict.get("NAVER_CLIENT_SECRET")
+  ->Option.getExn(~message="NAVER_CLIENT_SECRET environment variable is not set")

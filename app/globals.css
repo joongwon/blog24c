@@ -56,3 +56,13 @@ article pre {
 article code.language-poem {
   font-family: "GmarketSansMedium", sans-serif;
 }
+
+span.material-symbols-outlined {
+  font-size: inherit;
+  vertical-align: middle;
+  font-variation-settings: "FILL" 1;
+}
+
+span.material-symbols-outlined.outlined {
+  font-variation-settings: "FILL" 0;
+}

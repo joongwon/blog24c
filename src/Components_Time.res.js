@@ -99,7 +99,7 @@ function formatTitle(date) {
 function Components_Time(props) {
   var className = props.className;
   var children = props.children;
-  var now = Now.useNow();
+  var now = Now.useSync();
   var date = React.useMemo((function () {
           return new Date(children);
         }), [children]);

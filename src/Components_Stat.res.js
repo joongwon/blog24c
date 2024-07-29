@@ -3,20 +3,14 @@
 import * as JsxRuntime from "react/jsx-runtime";
 
 function Components_Stat(props) {
-  var __size = props.size;
   var count = props.count;
-  var size = __size !== undefined ? __size : "size-5";
   if (count > 0) {
     return JsxRuntime.jsxs("span", {
                 children: [
-                  JsxRuntime.jsx("img", {
-                        className: "inline " + size,
-                        alt: props.alt,
-                        src: props.icon
-                      }),
+                  props.icon,
                   count.toString()
                 ],
-                className: "mr-1 text-gray-500 whitespace-nowrap min-w-fit inline-block"
+                className: "mr-1 text-neutral-500 whitespace-nowrap min-w-fit inline-block"
               });
   } else {
     return null;

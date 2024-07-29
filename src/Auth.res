@@ -1,52 +1,39 @@
 @@directive(`'use client';`)
 
-type loggedIn = Actions.loginResult
-type t =
-  | Loading
-  | Anon
-  | LoggedIn(loggedIn)
+type _t = Loading | Anon | LoggedIn(Actions.loginResult)
 
-let state = ref(Loading)
-let listeners = Set.make()
-
-let useAuth = () =>
-  React.useSyncExternalStore(
-    ~subscribe=listener => {
-      listeners->Set.add(listener)
-      () => listeners->Set.delete(listener)->ignore
-    },
-    ~getSnapshot=() => state.contents,
-  )
+include GlobalState.Make({
+  type t = _t
+  let initial = () => Loading
+})
 
 let timeout = ref(None)
 
-let rec update = (newState: t) => {
-  state := newState
-
+addHook(state => {
   timeout.contents->Option.map(clearTimeout)->ignore
-  switch state.contents {
-  | Loading | Anon => ()
+  switch state {
   | LoggedIn(_) =>
     // refresh token after 50 minutes
     timeout := setTimeout(() => {
-        switch state.contents {
-        | Loading | Anon => ()
+        switch state {
         | LoggedIn(_) =>
           Actions.refresh()
-          ->Promise.thenResolve(res => {
-            let newState = switch res {
-            | None => Anon
-            | Some(res) => LoggedIn(res)
-            }
-            update(newState)
-          })
+          ->Promise.thenResolve(
+            res => {
+              let newState = switch res {
+              | None => Anon
+              | Some(res) => LoggedIn(res)
+              }
+              update(newState)
+            },
+          )
           ->Promise.done
+        | _ => ()
         }
       }, 50 * 60 * 1000)->Some
+  | _ => ()
   }
-
-  listeners->Set.forEach(listener => listener())
-}
+})
 
 // executed once by InitToken effect to initialize token
 let initTokenCalled = ref(false)
@@ -56,13 +43,14 @@ let initToken = async () => {
 
     let pathname: string = %raw(`window.location.pathname`)
     if pathname === "/login/naver/callback" {
-      state := Anon
+      update(Anon)
     } else {
       let res = await Actions.refresh()
-      switch res {
-      | None => state := Anon
-      | Some(res) => state := LoggedIn(res)
+      let newState = switch res {
+      | None => Anon
+      | Some(res) => LoggedIn(res)
       }
+      update(newState)
     }
   }
 }

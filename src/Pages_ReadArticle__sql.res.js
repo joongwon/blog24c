@@ -4,9 +4,9 @@ import * as Core__Option from "@rescript/core/src/Core__Option.res.js";
 import * as RescriptCore from "@rescript/core/src/RescriptCore.res.js";
 import * as PgtypedRescriptRuntime from "pgtyped-rescript-runtime";
 
-var getFilesIR = {"usedParamSet":{"id":true},"params":[{"name":"id","required":true,"transform":{"type":"scalar"},"locs":[{"a":111,"b":114}]}],"statement":"SELECT id, name\n        FROM files\n        WHERE edition_id = (SELECT id FROM last_editions WHERE article_id = :id!)"};
+var getPrevIR = {"usedParamSet":{"aid":true},"params":[{"name":"aid","required":true,"transform":{"type":"scalar"},"locs":[{"a":594,"b":598}]}],"statement":"SELECT\n          a.id,\n          title               AS \"title!\",\n          name                AS \"authorName!\",\n          first_published_at  AS \"publishedAt!\",\n          comments_count      AS \"commentsCount!\",\n          views_count         AS \"viewsCount!\",\n          likes_count         AS \"likesCount!\"\n        FROM last_editions e\n          JOIN articles a       ON e.article_id = a.id\n          JOIN users u          ON a.author_id = u.id\n          JOIN article_stats s  ON a.id = s.id\n        WHERE first_published_at < (SELECT first_published_at FROM last_editions WHERE article_id = :aid!)\n        ORDER BY first_published_at DESC LIMIT 1"};
 
-var query = new PgtypedRescriptRuntime.PreparedQuery(getFilesIR);
+var query = new PgtypedRescriptRuntime.PreparedQuery(getPrevIR);
 
 function many(client, params) {
   return query.run(params, client);
@@ -34,20 +34,20 @@ async function execute(client, params) {
   await query.run(params, client);
 }
 
-var GetFiles = {
+var GetPrev = {
   many: many,
   one: one,
   expectOne: expectOne,
   execute: execute
 };
 
-function getFiles(params, client) {
+function getPrev(params, client) {
   return query.run(params, client);
 }
 
-var getLikesIR = {"usedParamSet":{"id":true},"params":[{"name":"id","required":true,"transform":{"type":"scalar"},"locs":[{"a":120,"b":123}]}],"statement":"SELECT user_id AS id, name\n        FROM likes\n        JOIN users ON likes.user_id = users.id\n        WHERE article_id = :id!\n        ORDER BY created_at ASC"};
+var getNextIR = {"usedParamSet":{"aid":true},"params":[{"name":"aid","required":true,"transform":{"type":"scalar"},"locs":[{"a":594,"b":598}]}],"statement":"SELECT\n          a.id,\n          title               AS \"title!\",\n          name                AS \"authorName!\",\n          first_published_at  AS \"publishedAt!\",\n          comments_count      AS \"commentsCount!\",\n          views_count         AS \"viewsCount!\",\n          likes_count         AS \"likesCount!\"\n        FROM last_editions e\n          JOIN articles a       ON e.article_id = a.id\n          JOIN users u          ON a.author_id = u.id\n          JOIN article_stats s  ON a.id = s.id\n        WHERE first_published_at > (SELECT first_published_at FROM last_editions WHERE article_id = :aid!)\n        ORDER BY first_published_at ASC LIMIT 1"};
 
-var query$1 = new PgtypedRescriptRuntime.PreparedQuery(getLikesIR);
+var query$1 = new PgtypedRescriptRuntime.PreparedQuery(getNextIR);
 
 function many$1(client, params) {
   return query$1.run(params, client);
@@ -75,20 +75,20 @@ async function execute$1(client, params) {
   await query$1.run(params, client);
 }
 
-var GetLikes = {
+var GetNext = {
   many: many$1,
   one: one$1,
   expectOne: expectOne$1,
   execute: execute$1
 };
 
-function getLikes(params, client) {
+function getNext(params, client) {
   return query$1.run(params, client);
 }
 
-var getArticleIR = {"usedParamSet":{"id":true},"params":[{"name":"id","required":true,"transform":{"type":"scalar"},"locs":[{"a":489,"b":492}]}],"statement":"SELECT a.id, title AS \"title!\", content AS \"content!\", name AS \"authorName!\", views_count AS \"viewsCount!\", e.id AS \"editionId!\",\n        first_published_at AS \"firstPublishedAt!\", last_published_at AS \"lastPublishedAt!\",\n        (SELECT COUNT(*) FROM editions WHERE article_id = a.id) AS \"editionsCount\"\n        FROM last_editions e\n        JOIN articles a ON e.article_id = a.id\n        JOIN users u ON a.author_id = u.id\n        JOIN article_stats s ON a.id = s.id\n        WHERE a.id = :id!"};
+var getCommentsIR = {"usedParamSet":{"aid":true},"params":[{"name":"aid","required":true,"transform":{"type":"scalar"},"locs":[{"a":225,"b":229}]}],"statement":"SELECT\n          comments.id,\n          content,\n          created_at AS \"createdAt\",\n          author_id,\n          name\n        FROM comments\n          JOIN users ON comments.author_id = users.id\n        WHERE article_id = :aid!\n        ORDER BY created_at DESC"};
 
-var query$2 = new PgtypedRescriptRuntime.PreparedQuery(getArticleIR);
+var query$2 = new PgtypedRescriptRuntime.PreparedQuery(getCommentsIR);
 
 function many$2(client, params) {
   return query$2.run(params, client);
@@ -116,18 +116,147 @@ async function execute$2(client, params) {
   await query$2.run(params, client);
 }
 
-var GetArticle = {
+var GetComments = {
   many: many$2,
   one: one$2,
   expectOne: expectOne$2,
   execute: execute$2
 };
 
-function getArticle(params, client) {
+function getComments(params, client) {
   return query$2.run(params, client);
 }
 
+var getFilesIR = {"usedParamSet":{"aid":true},"params":[{"name":"aid","required":true,"transform":{"type":"scalar"},"locs":[{"a":131,"b":135}]}],"statement":"SELECT\n          id,\n          name\n        FROM files\n        WHERE edition_id = (SELECT id FROM last_editions WHERE article_id = :aid!)"};
+
+var query$3 = new PgtypedRescriptRuntime.PreparedQuery(getFilesIR);
+
+function many$3(client, params) {
+  return query$3.run(params, client);
+}
+
+async function one$3(client, params) {
+  var match = await query$3.run(params, client);
+  if (match.length !== 1) {
+    return ;
+  } else {
+    return match[0];
+  }
+}
+
+async function expectOne$3(client, params, errorMessage) {
+  var match = await query$3.run(params, client);
+  if (match.length !== 1) {
+    return RescriptCore.panic(Core__Option.getOr(errorMessage, "More or less than one item was returned"));
+  } else {
+    return match[0];
+  }
+}
+
+async function execute$3(client, params) {
+  await query$3.run(params, client);
+}
+
+var GetFiles = {
+  many: many$3,
+  one: one$3,
+  expectOne: expectOne$3,
+  execute: execute$3
+};
+
+function getFiles(params, client) {
+  return query$3.run(params, client);
+}
+
+var getLikesIR = {"usedParamSet":{"aid":true},"params":[{"name":"aid","required":true,"transform":{"type":"scalar"},"locs":[{"a":117,"b":121}]}],"statement":"SELECT\n          name\n        FROM likes\n          JOIN users ON likes.user_id = users.id\n        WHERE article_id = :aid!\n        ORDER BY created_at ASC"};
+
+var query$4 = new PgtypedRescriptRuntime.PreparedQuery(getLikesIR);
+
+function many$4(client, params) {
+  return query$4.run(params, client);
+}
+
+async function one$4(client, params) {
+  var match = await query$4.run(params, client);
+  if (match.length !== 1) {
+    return ;
+  } else {
+    return match[0];
+  }
+}
+
+async function expectOne$4(client, params, errorMessage) {
+  var match = await query$4.run(params, client);
+  if (match.length !== 1) {
+    return RescriptCore.panic(Core__Option.getOr(errorMessage, "More or less than one item was returned"));
+  } else {
+    return match[0];
+  }
+}
+
+async function execute$4(client, params) {
+  await query$4.run(params, client);
+}
+
+var GetLikes = {
+  many: many$4,
+  one: one$4,
+  expectOne: expectOne$4,
+  execute: execute$4
+};
+
+function getLikes(params, client) {
+  return query$4.run(params, client);
+}
+
+var getArticleIR = {"usedParamSet":{"aid":true},"params":[{"name":"aid","required":true,"transform":{"type":"scalar"},"locs":[{"a":582,"b":586}]}],"statement":"SELECT\n            a.id,\n            title               AS \"title!\",\n            content             AS \"content!\",\n            name                AS \"authorName!\",\n            views_count         AS \"viewsCount!\",\n            e.id                AS \"editionId!\",\n            first_published_at  AS \"firstPublishedAt!\",\n            last_published_at   AS \"lastPublishedAt!\"\n        FROM last_editions e\n          JOIN articles a       ON e.article_id = a.id\n          JOIN users u          ON a.author_id = u.id\n          JOIN article_stats s  ON a.id = s.id\n        WHERE a.id = :aid!"};
+
+var query$5 = new PgtypedRescriptRuntime.PreparedQuery(getArticleIR);
+
+function many$5(client, params) {
+  return query$5.run(params, client);
+}
+
+async function one$5(client, params) {
+  var match = await query$5.run(params, client);
+  if (match.length !== 1) {
+    return ;
+  } else {
+    return match[0];
+  }
+}
+
+async function expectOne$5(client, params, errorMessage) {
+  var match = await query$5.run(params, client);
+  if (match.length !== 1) {
+    return RescriptCore.panic(Core__Option.getOr(errorMessage, "More or less than one item was returned"));
+  } else {
+    return match[0];
+  }
+}
+
+async function execute$5(client, params) {
+  await query$5.run(params, client);
+}
+
+var GetArticle = {
+  many: many$5,
+  one: one$5,
+  expectOne: expectOne$5,
+  execute: execute$5
+};
+
+function getArticle(params, client) {
+  return query$5.run(params, client);
+}
+
 export {
+  GetPrev ,
+  getPrev ,
+  GetNext ,
+  getNext ,
+  GetComments ,
+  getComments ,
   GetFiles ,
   getFiles ,
   GetLikes ,

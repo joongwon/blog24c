@@ -5,23 +5,35 @@ import * as Jsonwebtoken from "jsonwebtoken";
 function sign(payload, secret, options) {
   return new Promise((function (resolve, param) {
                 Jsonwebtoken.sign(payload, secret, options, (function (err, token) {
-                        if (err !== undefined) {
+                        if (!(err === null || err === undefined)) {
                           return resolve({
                                       TAG: "Error",
                                       _0: err
                                     });
                         }
-                        if (token !== undefined) {
+                        err === null;
+                        if (!(token === null || token === undefined)) {
                           return resolve({
                                       TAG: "Ok",
                                       _0: token
                                     });
                         }
+                        if (token === null) {
+                          throw {
+                                RE_EXN_ID: "Assert_failure",
+                                _1: [
+                                  "Jwt.res",
+                                  12,
+                                  13
+                                ],
+                                Error: new Error()
+                              };
+                        }
                         throw {
                               RE_EXN_ID: "Assert_failure",
                               _1: [
                                 "Jwt.res",
-                                11,
+                                12,
                                 13
                               ],
                               Error: new Error()
