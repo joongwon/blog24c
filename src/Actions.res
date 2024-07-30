@@ -92,9 +92,7 @@ type tryLoginSuccess =
   | Register({code: string, naverName: string})
   | Login(loginResult)
 
-type tryLoginError =
-  | Unauthorized
-  | InternalServerError
+type tryLoginError = Unauthorized
 
 let tryLogin = async code => {
   let getNaverAccessToken = async () => {

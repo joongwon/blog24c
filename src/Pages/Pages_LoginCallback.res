@@ -3,7 +3,6 @@
 type _t =
   | Loading
   | Error
-  | AccessDenied
   | Redirect
   | Login
   | Register({name: string, code: string})
@@ -33,8 +32,7 @@ let initLogin = async () => {
       | Ok(Login(res)) =>
         Auth.update(Auth.LoggedIn(res))
         update(Login)
-      | Error(Unauthorized) => update(AccessDenied)
-      | Error(InternalServerError) => update(Error)
+      | Error(Unauthorized) => update(Error)
       }
     }
   }
@@ -77,13 +75,6 @@ let default = (~searchParams) => {
   switch login {
   | Loading => <main> {"로그인 중..."->React.string} </main>
   | Login | Register(_) | Redirect => <main> {"리다이렉트 중..."->React.string} </main>
-  | AccessDenied =>
-    <main>
-      <p> {"접근 권한이 없습니다"->React.string} </p>
-      <nav>
-        <Next.Link href={from}> {"돌아가기"->React.string} </Next.Link>
-      </nav>
-    </main>
   | Error =>
     <main>
       <p> {"로그인 중 오류가 발생했습니다"->React.string} </p>

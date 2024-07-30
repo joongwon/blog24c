@@ -8,7 +8,6 @@ type tryLoginSuccess =
   | Login(loginResult)
 type tryLoginError =
   | Unauthorized
-  | InternalServerError
 
 let refresh: unit => promise<option<loginResult>>
 let tryLogin: string => promise<result<tryLoginSuccess, tryLoginError>>

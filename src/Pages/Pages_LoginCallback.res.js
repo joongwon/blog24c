@@ -37,11 +37,7 @@ async function initLogin() {
   }
   var res = await Actions.tryLogin(code);
   if (res.TAG !== "Ok") {
-    if (res._0 === "Unauthorized") {
-      return update("AccessDenied");
-    } else {
-      return update("Error");
-    }
+    return update("Error");
   }
   var res$1 = res._0;
   if (res$1.TAG === "Register") {
@@ -111,20 +107,6 @@ function Pages_LoginCallback$default(props) {
                                                 })
                                           })
                                     ]
-                                  })
-                            })
-                      ]
-                    });
-      case "AccessDenied" :
-          return JsxRuntime.jsxs("main", {
-                      children: [
-                        JsxRuntime.jsx("p", {
-                              children: "접근 권한이 없습니다"
-                            }),
-                        JsxRuntime.jsx("nav", {
-                              children: JsxRuntime.jsx(Link, {
-                                    href: from,
-                                    children: "돌아가기"
                                   })
                             })
                       ]
