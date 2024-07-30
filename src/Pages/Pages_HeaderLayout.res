@@ -9,7 +9,7 @@ let default = (~children) => {
       <Next.Link className={"text-2xl font-bold"->Some} href="/"> {title->React.string} </Next.Link>
       <AuthMenu />
     </Header>
-    <div className="flex flex-row last:*:flex-1 gap-4 items-start">
+    <div className="flex flex-row last:*:flex-1 last:*:m-4 last:*:min-w-0 gap-4 items-start">
       <NavMenu />
       children
     </div>
