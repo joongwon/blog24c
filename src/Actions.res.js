@@ -3,8 +3,8 @@
 
 import * as Db from "./Db.res.js";
 import * as Env from "./Env.res.js";
-import * as Jwt from "./lib/Jwt.res.js";
-import * as Redis from "./lib/Redis.res.js";
+import * as Jwt from "./Lib/Jwt.res.js";
+import * as Redis from "./Lib/Redis.res.js";
 import * as Utils from "./Utils.res.js";
 import * as $$Crypto from "crypto";
 import * as Js_dict from "rescript/lib/es6/js_dict.js";
@@ -26,6 +26,15 @@ function setRefreshToken(refreshToken) {
         httpOnly: true,
         sameSite: "strict",
         maxAge: 604800
+      });
+}
+
+function deleteRefreshToken() {
+  $$Headers.cookies().set("refreshToken", "", {
+        path: "/",
+        httpOnly: true,
+        sameSite: "strict",
+        maxAge: 0
       });
 }
 
@@ -142,7 +151,6 @@ async function tryLogin(code) {
     }
     var redis = await Db.getRedis();
     var registerCode = "registerCode:" + $$Crypto.randomUUID();
-    console.log("set registerCode", registerCode);
     await redis.set(registerCode, naverId, {
           ex: 600
         });
@@ -163,8 +171,20 @@ async function tryLogin(code) {
                   })));
 }
 
+async function logout() {
+  var refreshToken = getRefreshToken();
+  deleteRefreshToken();
+  return await Utils.$$Option.await_(Utils.$$Option.map(refreshToken, (async function (refreshToken) {
+                      var redis = await Db.getRedis();
+                      return await redis.del(refreshToken);
+                    }))).then(function (prim) {
+              
+            });
+}
+
 export {
   refresh ,
   tryLogin ,
+  logout ,
 }
 /* Db Not a pure module */

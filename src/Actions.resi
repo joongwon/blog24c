@@ -12,3 +12,4 @@ type tryLoginError =
 
 let refresh: unit => promise<option<loginResult>>
 let tryLogin: string => promise<result<tryLoginSuccess, tryLoginError>>
+let logout: unit => promise<unit>

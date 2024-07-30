@@ -6,7 +6,12 @@ async function getDel(client, key) {
   return Caml_option.null_to_opt(await client.getDel(key));
 }
 
+async function get(client, key) {
+  return Caml_option.null_to_opt(await client.get(key));
+}
+
 export {
   getDel ,
+  get ,
 }
 /* No side effect */

@@ -28,7 +28,8 @@ let make = () => {
   }
   let handleLogout = e => {
     e->ReactEvent.Mouse.preventDefault
-    //Auth.logout()
+    Actions.logout()->Promise.done
+    Auth.update(Auth.Anon)
   }
   switch auth {
   | Loading =>

@@ -30,6 +30,20 @@ let setRefreshToken = refreshToken => {
     },
   )
 }
+
+let deleteRefreshToken = () => {
+  Next.Headers.cookies()->Next.Headers.Cookies.set(
+    "refreshToken",
+    "",
+    {
+      path: "/",
+      httpOnly: true,
+      sameSite: #strict,
+      maxAge: 0,
+    },
+  )
+}
+
 let login = async profile => {
   let token = await Jwt.sign({"id": profile.id}, Env.jwtSecret, {expiresIn: "1h"})
   await token
@@ -151,7 +165,6 @@ let tryLogin = async code => {
     | None =>
       let redis = await Db.getRedis()
       let registerCode = "registerCode:" ++ randomUUID()
-      Console.log2("set registerCode", registerCode)
       await redis->Redis.set(registerCode, naverId, {ex: 10 * 60})
       Register({code: registerCode, naverName})
     }
@@ -176,4 +189,16 @@ let tryLogin = async code => {
     res
   })
   ->Result.await_
+}
+
+let logout = async () => {
+  let refreshToken = getRefreshToken()
+  deleteRefreshToken()
+  await refreshToken
+  ->Option.map(async refreshToken => {
+    let redis = await Db.getRedis()
+    await redis->Redis.del(refreshToken)
+  })
+  ->Option.await_
+  ->Promise.thenResolve(ignore)
 }
