@@ -27,6 +27,6 @@ let useIsServer = () => {
   React.useLayoutEffect(() => {
     setIsServer(_ => false)
     None
-  }, [])
+  }, [setIsServer])
   isServer
 }

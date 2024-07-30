@@ -63,7 +63,7 @@ let make = (~children) => {
     } else {
       None
     }
-  }, [stickyHeader])
+  }, [setTransY])
 
   // prevent transition setting multiple times
   let style = React.useMemo(
@@ -71,7 +71,7 @@ let make = (~children) => {
       stickyHeader
         ? ReactDOM.Style.make(~transform=`translateY(${transY->Float.toString}px)`, ())
         : ReactDOM.Style.make(),
-    (stickyHeader, transY),
+    [transY],
   )
   <header
     ref={headerRef->ReactDOM.Ref.domRef}

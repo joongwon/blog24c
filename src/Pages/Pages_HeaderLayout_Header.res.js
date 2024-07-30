@@ -52,15 +52,12 @@ function Pages_HeaderLayout_Header(props) {
           return (function () {
                     window.removeEventListener("scroll", scrollHandler);
                   });
-        }), [true]);
+        }), [setTransY]);
   var style = React.useMemo((function () {
           return {
                   transform: "translateY(" + transY.toString() + "px)"
                 };
-        }), [
-        true,
-        transY
-      ]);
+        }), [transY]);
   return JsxRuntime.jsx("header", {
               children: props.children,
               ref: Caml_option.some(headerRef),

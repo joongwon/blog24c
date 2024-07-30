@@ -96,7 +96,7 @@ function useIsServer() {
           setIsServer(function (param) {
                 return false;
               });
-        }), []);
+        }), [setIsServer]);
   return match[0];
 }
 
