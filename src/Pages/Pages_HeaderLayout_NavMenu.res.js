@@ -20,7 +20,7 @@ var Button = {
 
 function Pages_HeaderLayout_NavMenu(props) {
   var match = React.useState(function () {
-        return true;
+        return false;
       });
   var setIsOpen = match[1];
   var isOpen = match[0];
@@ -50,7 +50,7 @@ function Pages_HeaderLayout_NavMenu(props) {
   return JsxRuntime.jsxs("nav", {
               children: [
                 JsxRuntime.jsx("div", {
-                      className: "fixed opacity-75 bg-white inset-0 -z-10 md:hidden" + (
+                      className: "fixed opacity-75 bg-white inset-0 -z-10 transition-opacity md:hidden" + (
                         isOpen ? "" : " hidden"
                       ),
                       onClick: (function (param) {

@@ -20,7 +20,8 @@ module Link = {
   external make: (
     ~href: string,
     ~children: React.element,
-    ~className: option<string>=?,
+    ~className: string=?,
+    ~onClick: unit => unit=?,
   ) => React.element = "default"
 }
 

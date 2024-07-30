@@ -62,23 +62,28 @@ function Components_ArticleList$Item(props) {
                               children: item.title,
                               className: "mr-1"
                             }),
-                        JsxRuntime.jsx(Components_Stat.make, {
-                              icon: JsxRuntime.jsx(Icons.$$Comment.make, {}),
-                              count: item.commentsCount
-                            }),
-                        JsxRuntime.jsx(Components_Stat.make, {
-                              icon: JsxRuntime.jsx(Icons.Visibility.make, {}),
-                              count: item.viewsCount
-                            }),
-                        JsxRuntime.jsx(Components_Stat.make, {
-                              icon: JsxRuntime.jsx(Icons.Favorite.make, {}),
-                              count: item.likesCount
+                        JsxRuntime.jsxs("span", {
+                              children: [
+                                JsxRuntime.jsx(Components_Stat.make, {
+                                      icon: JsxRuntime.jsx(Icons.$$Comment.make, {}),
+                                      count: item.commentsCount
+                                    }),
+                                JsxRuntime.jsx(Components_Stat.make, {
+                                      icon: JsxRuntime.jsx(Icons.Visibility.make, {}),
+                                      count: item.viewsCount
+                                    }),
+                                JsxRuntime.jsx(Components_Stat.make, {
+                                      icon: JsxRuntime.jsx(Icons.Favorite.make, {}),
+                                      count: item.likesCount
+                                    })
+                              ],
+                              className: "text-neutral-500"
                             })
                       ]
                     }),
                 JsxRuntime.jsxs("p", {
                       children: [
-                        item.authorName + ",",
+                        item.authorName + ", ",
                         JsxRuntime.jsx(Components_Time.make, {
                               children: item.publishedAt
                             })

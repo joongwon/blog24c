@@ -140,7 +140,7 @@ async function $$default(param) {
                               children: "댓글이 없습니다.",
                               className: "text-center p-6 text-neutral-500"
                             }),
-                      className: "border-y mb-8"
+                      className: "border-y my-8"
                     }),
                 JsxRuntime.jsxs(Components_ArticleList.make, {
                       children: [
@@ -148,14 +148,14 @@ async function $$default(param) {
                                 item: next,
                                 icon: Caml_option.some(JsxRuntime.jsx(Icons.ArrowUp.make, {}))
                               }) : JsxRuntime.jsx(Components_ArticleList.Placeholder.make, {
-                                children: "(첫번째 글입니다)",
+                                children: "(마지막 글입니다)",
                                 icon: Caml_option.some(JsxRuntime.jsx(Icons.ArrowUp.make, {}))
                               }),
                         prev !== undefined ? JsxRuntime.jsx(Components_ArticleList.Item.make, {
                                 item: prev,
                                 icon: Caml_option.some(JsxRuntime.jsx(Icons.ArrowDown.make, {}))
                               }) : JsxRuntime.jsx(Components_ArticleList.Placeholder.make, {
-                                children: "(마지막 글입니다)",
+                                children: "(첫번째 글입니다)",
                                 icon: Caml_option.some(JsxRuntime.jsx(Icons.ArrowDown.make, {}))
                               })
                       ]

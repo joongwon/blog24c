@@ -53,8 +53,8 @@ module ContentTypeOption = {
       className={if contentType === optionValue {
         "bg-neutral-200 "
       } else {
-        "bg-white "
-      } ++ "px-2 py-2 text-xs first:rounded-l-xl last:rounded-r-xl border border-neutral-300 hover:bg-neutral-300"}
+        "bg-white hover:bg-neutral-300 "
+      } ++ "px-2 py-2 text-xs first:rounded-l-xl last:rounded-r-xl border border-neutral-300"}
       onClick={_ => setContentType(_ => optionValue)}>
       {(optionValue :> string)->React.string}
     </button>

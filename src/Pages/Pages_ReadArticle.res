@@ -136,7 +136,7 @@ let default = async (~params) => {
           aid={aid} likes={(likes :> array<Buttons.like>)} commentsCount={comments->Array.length}
         />
         /* comments */
-        <section className="border-y mb-8">
+        <section className="border-y my-8">
           {if comments->Array.length > 0 {
             <ul>
               {comments
@@ -164,7 +164,7 @@ let default = async (~params) => {
             <ArticleList.Item icon={<Icons.ArrowUp />} item={(item :> ArticleList.Item.t)} />
           | None =>
             <ArticleList.Placeholder icon={<Icons.ArrowUp />}>
-              {"(첫번째 글입니다)"}
+              "(마지막 글입니다)"
             </ArticleList.Placeholder>
           }}
           {switch prev {
@@ -172,7 +172,7 @@ let default = async (~params) => {
             <ArticleList.Item icon={<Icons.ArrowDown />} item={(item :> ArticleList.Item.t)} />
           | None =>
             <ArticleList.Placeholder icon={<Icons.ArrowDown />}>
-              {"(마지막 글입니다)"}
+              "(첫번째 글입니다)"
             </ArticleList.Placeholder>
           }}
         </ArticleList>

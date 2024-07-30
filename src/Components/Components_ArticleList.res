@@ -41,17 +41,19 @@ module Item = {
     <ItemBase icon>
       <p>
         /* title link */
-        <Next.Link href={`/articles/${item.id->Int.toString}`} className={Some("mr-1")}>
+        <Next.Link href={`/articles/${item.id->Int.toString}`} className={"mr-1"}>
           {item.title->React.string}
         </Next.Link>
         /* statistics */
-        <Stat icon={<Icons.Comment />} count={item.commentsCount} />
-        <Stat icon={<Icons.Visibility />} count={item.viewsCount} />
-        <Stat icon={<Icons.Favorite />} count={item.likesCount} />
+        <span className="text-neutral-500">
+          <Stat icon={<Icons.Comment />} count={item.commentsCount} />
+          <Stat icon={<Icons.Visibility />} count={item.viewsCount} />
+          <Stat icon={<Icons.Favorite />} count={item.likesCount} />
+        </span>
       </p>
       /* author & publishedAt */
       <p className="mr-1 text-neutral-500 text-sm whitespace-nowrap min-w-fit flex-1 text-right">
-        {`${item.authorName},`->React.string}
+        {`${item.authorName}, `->React.string}
         <Time> {item.publishedAt} </Time>
       </p>
     </ItemBase>

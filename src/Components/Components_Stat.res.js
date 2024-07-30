@@ -10,7 +10,7 @@ function Components_Stat(props) {
                   props.icon,
                   count.toString()
                 ],
-                className: "mr-1 text-neutral-500 whitespace-nowrap min-w-fit inline-block"
+                className: "mr-1 whitespace-nowrap min-w-fit inline-block"
               });
   } else {
     return null;

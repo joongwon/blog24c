@@ -4,21 +4,37 @@
 import * as Auth from "../Auth.res.js";
 import * as Icons from "../Icons.res.js";
 import * as React from "react";
+import Link from "next/link";
 import * as Belt_Array from "rescript/lib/es6/belt_Array.js";
 import * as JsxRuntime from "react/jsx-runtime";
 
 function Pages_ReadArticle_Buttons$Button(props) {
   var __onClick = props.onClick;
+  var __href = props.href;
+  var children = props.children;
   var __className = props.className;
   var className = __className !== undefined ? __className : "";
-  var onClick = __onClick !== undefined ? __onClick : (function (param) {
+  var href = __href !== undefined ? __href : "";
+  var onClick = __onClick !== undefined ? __onClick : (function () {
         
       });
-  return JsxRuntime.jsx("button", {
-              children: props.children,
-              className: "f " + className,
-              onClick: onClick
-            });
+  var className$1 = "rounded border border-gray-300 px-2 py-1 text-sm flex gap-1 items-center hover:bg-neutral-200 " + className;
+  if (href === "") {
+    return JsxRuntime.jsx("button", {
+                children: children,
+                className: className$1,
+                onClick: (function (param) {
+                    onClick();
+                  })
+              });
+  } else {
+    return JsxRuntime.jsx(Link, {
+                href: href,
+                children: children,
+                className: className$1,
+                onClick: onClick
+              });
+  }
 }
 
 var Button = {
@@ -76,12 +92,12 @@ function Pages_ReadArticle_Buttons(props) {
   var likes = match[0];
   return JsxRuntime.jsxs("section", {
               children: [
-                likes.length > 0 ? JsxRuntime.jsx("p", {
-                        children: likes.map(function (like) {
+                JsxRuntime.jsx("p", {
+                      children: likes.length > 0 ? likes.map(function (like) {
                                 return like.name;
-                              }).join(", ") + "님이 이 일지에 공감합니다",
-                        className: "text-sm text-neutral-500"
-                      }) : null,
+                              }).join(", ") + "님이 이 일지에 공감합니다" : null,
+                      className: "text-sm text-neutral-500 align-bottom h-4 mb-1"
+                    }),
                 JsxRuntime.jsxs("div", {
                       children: [
                         JsxRuntime.jsxs(Pages_ReadArticle_Buttons$Button, {
@@ -98,12 +114,19 @@ function Pages_ReadArticle_Buttons(props) {
                                     }),
                                 likes.length.toString()
                               ],
-                              onClick: (function (param) {
+                              onClick: (function () {
                                   toggleLike();
                                 })
+                            }),
+                        JsxRuntime.jsx("hr", {
+                              className: "border-0 flex-1"
+                            }),
+                        JsxRuntime.jsx(Pages_ReadArticle_Buttons$Button, {
+                              children: "목록",
+                              href: "/articles"
                             })
                       ],
-                      className: "flex"
+                      className: "flex gap-1"
                     })
               ]
             });

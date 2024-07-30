@@ -7,15 +7,20 @@ import * as Pages_ListArticles__sql from "./Pages_ListArticles__sql.res.js";
 
 async function $$default(param) {
   var articles = await Db.query(Pages_ListArticles__sql.Query1.many, undefined);
-  return JsxRuntime.jsx("main", {
-              children: JsxRuntime.jsx(Components_ArticleList.make, {
-                    children: articles.map(function (article) {
-                          return JsxRuntime.jsx(Components_ArticleList.Item.make, {
-                                      item: article
-                                    }, article.id.toString());
-                        })
-                  }),
-              className: "p-4"
+  return JsxRuntime.jsxs("main", {
+              children: [
+                JsxRuntime.jsx("h1", {
+                      children: "모든 일지",
+                      className: "text-3xl font-bold mb-4 mx-1"
+                    }),
+                JsxRuntime.jsx(Components_ArticleList.make, {
+                      children: articles.map(function (article) {
+                            return JsxRuntime.jsx(Components_ArticleList.Item.make, {
+                                        item: article
+                                      }, article.id.toString());
+                          })
+                    })
+              ]
             });
 }
 

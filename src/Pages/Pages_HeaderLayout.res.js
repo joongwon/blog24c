@@ -27,7 +27,7 @@ function Pages_HeaderLayout$default(props) {
                       className: "flex flex-row last:*:flex-1 last:*:m-4 last:*:min-w-0 gap-4 items-start"
                     })
               ],
-              className: "mx-auto flex flex-col max-w-[60rem] gap-4"
+              className: "mx-auto flex flex-col max-w-[60rem] gap-4 pb-[10rem]"
             });
 }
 

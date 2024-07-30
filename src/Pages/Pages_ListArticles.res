@@ -11,7 +11,8 @@ let default = async () => {
   `)->Db.query() {
   | articles =>
     module ArticleList = Components_ArticleList
-    <main className="p-4">
+    <main>
+      <h1 className="text-3xl font-bold mb-4 mx-1"> {"모든 일지"->React.string} </h1>
       <ArticleList>
         {articles
         ->Array.map(article =>

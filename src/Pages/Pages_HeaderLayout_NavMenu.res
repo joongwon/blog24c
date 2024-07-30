@@ -11,7 +11,7 @@ module Button = {
 
 @react.component
 let make = () => {
-  let (isOpen, setIsOpen) = React.useState(() => true)
+  let (isOpen, setIsOpen) = React.useState(() => false)
   let handleToggle = e => {
     e->ReactEvent.Mouse.stopPropagation
     setIsOpen(prev => !prev)
@@ -28,7 +28,9 @@ let make = () => {
     className="fixed bottom-0 right-0 m-8 flex flex-col text-xl md:static md:inset-auto md:m-0 md:text-base md:bg-neutral-200 md:p-4">
     /* overlay */
     <div
-      className={"fixed opacity-75 bg-white inset-0 -z-10 md:hidden" ++ (isOpen ? "" : " hidden")}
+      className={"fixed opacity-75 bg-white inset-0 -z-10 transition-opacity md:hidden" ++ (
+        isOpen ? "" : " hidden"
+      )}
       onClick={_ => setIsOpen(_ => false)}
     />
     <ul
