@@ -1,2 +1,2 @@
 'use client';
-export { default } from "@/Pages_RootError.res.js";
+export { default } from "@/Pages/Pages_RootError.res.js";

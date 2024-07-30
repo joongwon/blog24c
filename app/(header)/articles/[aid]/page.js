@@ -1,1 +1,1 @@
-export { default, generateMetadata } from "@/Pages_ReadArticle.res.js";
+export { default, generateMetadata } from "@/Pages/Pages_ReadArticle.res.js";

@@ -1,1 +1,1 @@
-export { default } from "@/Pages_LoginCallback.res.js";
+export { default } from "@/Pages/Pages_LoginCallback.res.js";

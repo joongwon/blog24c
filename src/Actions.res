@@ -1,5 +1,15 @@
 @@directive(`'use server';`)
 
+open! Utils
+
+@module("crypto") external randomUUID: unit => string = "randomUUID"
+
+type profile = {id: string, name: string, role: [#admin | #user]}
+
+type loginResult = {
+  accessToken: string,
+  profile: profile,
+}
 // 쿠키에 저장된 refresh token을 가져오는 함수
 let getRefreshToken = () => {
   Next.Headers.cookies()
@@ -20,56 +30,18 @@ let setRefreshToken = refreshToken => {
     },
   )
 }
-
-@module("crypto") external randomUUID: unit => string = "randomUUID"
-
-let resultAwait = async res =>
-  switch res {
-  | Ok(res) => Ok(await res)
-  | Error(err) => Error(err)
-  }
-
-type profile = {id: string, name: string, role: [#admin | #user]}
-
-type loginResult = {
-  accessToken: string,
-  profile: profile,
+let login = async profile => {
+  let token = await Jwt.sign({"id": profile.id}, Env.jwtSecret, {expiresIn: "1h"})
+  await token
+  ->Result.map(async accessToken => {
+    let refreshToken = "refreshToken:" ++ randomUUID()
+    let redis = await Db.getRedis()
+    await redis->Redis.set(refreshToken, profile.id, {ex: 7 * 24 * 60 * 60})
+    setRefreshToken(refreshToken)
+    {accessToken, profile: (profile :> profile)}
+  })
+  ->Result.await_
 }
-%%private(
-  let getUserById = async id => {
-    await %sql.one(`/* @name GetUserById */ SELECT id, name, role FROM users WHERE id = :id!`)->Db.query({
-      id: id,
-    })
-  }
-  let getUserByNaverId = async naverId => {
-    await %sql.one(`/* @name GetUserByNaverId */ SELECT id, name, role FROM users WHERE naver_id = :naverId!`)->Db.query({
-      naverId: naverId,
-    })
-  }
-  let login = async profile => {
-    let token = await Jwt.sign({"id": profile.id}, Env.jwtSecret, {expiresIn: "1h"})
-    await token
-    ->Result.map(async accessToken => {
-      let refreshToken = "refreshToken:" ++ randomUUID()
-      let redis = await Db.getRedis()
-      await redis->Redis.set(refreshToken, profile.id, {ex: 7 * 24 * 60 * 60})
-      setRefreshToken(refreshToken)
-      {accessToken, profile: (profile :> profile)}
-    })
-    ->resultAwait
-  }
-)
-
-let optionAwait = async option =>
-  switch option {
-  | None => None
-  | Some(value) => Some(await value)
-  }
-
-let optionFlatten = option => option->Option.flatMap(x => x)
-let resultToOption = result => result->Result.mapOr(None, x => Some(x))
-let optionResultFlatten = option => option->Option.flatMap(resultToOption)
-let resultFlatten = result => result->Result.flatMap(x => x)
 
 let refresh = async () => {
   let refreshToken = getRefreshToken()
@@ -79,18 +51,26 @@ let refresh = async () => {
       let redis = await Db.getRedis()
       await redis->Redis.getDel(refreshToken)
     })
-    ->optionAwait
-    ->Promise.thenResolve(optionFlatten)
+    ->Option.await_
+    ->Promise.thenResolve(Option.flatten)
+
   let profile =
     await userId
-    ->Option.map(getUserById)
-    ->optionAwait
-    ->Promise.thenResolve(optionFlatten)
+    ->Option.map(userId =>
+      %sql.one(`
+        /* @name GetUserById */
+        SELECT id, name, role FROM users WHERE id = :id!
+      `)->Db.query({
+        id: userId,
+      })
+    )
+    ->Option.await_
+    ->Promise.thenResolve(Option.flatten)
   let res =
     await profile
     ->Option.map(profile => login((profile :> profile)))
-    ->optionAwait
-    ->Promise.thenResolve(optionResultFlatten)
+    ->Option.await_
+    ->Promise.thenResolve(Option.flattenResult)
   res
 }
 
@@ -179,12 +159,21 @@ let tryLogin = async code => {
 
   let accessToken = await getNaverAccessToken()
   let naverProfile =
-    await accessToken->Result.map(getNaverProfile)->resultAwait->Promise.thenResolve(resultFlatten)
+    await accessToken
+    ->Result.map(getNaverProfile)
+    ->Result.await_
+    ->Promise.thenResolve(Result.flatten)
   await naverProfile
   ->Result.map(async ((naverId, naverName)) => {
-    let profile = await getUserByNaverId(naverId)
+    let profile = await %sql.one(`
+        /* @name GetUserByNaverId */
+        SELECT id, name, role FROM users WHERE naver_id = :naverId!
+      `)->Db.query({
+      naverId: naverId,
+    })
+
     let res = await loginOrRegister((profile :> option<profile>), naverId, naverName)
     res
   })
-  ->resultAwait
+  ->Result.await_
 }

@@ -1,1 +1,1 @@
-export { default } from "@/Pages_ListArticles.res.js";
+export { default } from "@/Pages/Pages_ListArticles.res.js";

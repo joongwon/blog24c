@@ -1,1 +1,1 @@
-export { default } from "@/Pages_HeaderLayout.res.js";
+export { default } from "@/Pages/Pages_HeaderLayout.res.js";

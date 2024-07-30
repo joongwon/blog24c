@@ -1,4 +1,4 @@
-/** Types generated for queries found in "src/Pages_ListArticles.res" */
+/** Types generated for queries found in "src/Pages/Pages_ListArticles.res" */
 open PgTyped
 
 

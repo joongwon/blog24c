@@ -1,1 +1,1 @@
-export { default } from "@/Pages_Main.res.js";
+export { default } from "@/Pages/Pages_Main.res.js";

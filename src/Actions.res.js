@@ -5,18 +5,17 @@ import * as Db from "./Db.res.js";
 import * as Env from "./Env.res.js";
 import * as Jwt from "./lib/Jwt.res.js";
 import * as Redis from "./lib/Redis.res.js";
+import * as Utils from "./Utils.res.js";
 import * as $$Crypto from "crypto";
 import * as Js_dict from "rescript/lib/es6/js_dict.js";
 import * as Js_json from "rescript/lib/es6/js_json.js";
 import * as Caml_option from "rescript/lib/es6/caml_option.js";
 import * as Actions__sql from "./Actions__sql.res.js";
-import * as Core__Option from "@rescript/core/src/Core__Option.res.js";
-import * as Core__Result from "@rescript/core/src/Core__Result.res.js";
 import * as $$Headers from "next/headers";
 import * as Webapi__Fetch from "rescript-webapi/src/Webapi/Webapi__Fetch.res.js";
 
 function getRefreshToken() {
-  return Core__Option.map($$Headers.cookies().get("refreshToken"), (function (cookie) {
+  return Utils.$$Option.map($$Headers.cookies().get("refreshToken"), (function (cookie) {
                 return cookie.value;
               }));
 }
@@ -30,39 +29,13 @@ function setRefreshToken(refreshToken) {
       });
 }
 
-async function resultAwait(res) {
-  if (res.TAG === "Ok") {
-    return {
-            TAG: "Ok",
-            _0: await res._0
-          };
-  } else {
-    return {
-            TAG: "Error",
-            _0: res._0
-          };
-  }
-}
-
-async function getUserById(id) {
-  return await Db.query(Actions__sql.GetUserById.one, {
-              id: id
-            });
-}
-
-async function getUserByNaverId(naverId) {
-  return await Db.query(Actions__sql.GetUserByNaverId.one, {
-              naverId: naverId
-            });
-}
-
 async function login(profile) {
   var token = await Jwt.sign({
         id: profile.id
       }, Env.jwtSecret, {
         expiresIn: "1h"
       });
-  return await resultAwait(Core__Result.map(token, (async function (accessToken) {
+  return await Utils.Result.await_(Utils.Result.map(token, (async function (accessToken) {
                     var refreshToken = "refreshToken:" + $$Crypto.randomUUID();
                     var redis = await Db.getRedis();
                     await redis.set(refreshToken, profile.id, {
@@ -76,45 +49,20 @@ async function login(profile) {
                   })));
 }
 
-async function optionAwait(option) {
-  if (option !== undefined) {
-    return Caml_option.some(await Caml_option.valFromOption(option));
-  }
-  
-}
-
-function optionFlatten(option) {
-  return Core__Option.flatMap(option, (function (x) {
-                return x;
-              }));
-}
-
-function resultToOption(result) {
-  return Core__Result.mapOr(result, undefined, (function (x) {
-                return Caml_option.some(x);
-              }));
-}
-
-function optionResultFlatten(option) {
-  return Core__Option.flatMap(option, resultToOption);
-}
-
-function resultFlatten(result) {
-  return Core__Result.flatMap(result, (function (x) {
-                return x;
-              }));
-}
-
 async function refresh() {
   var refreshToken = getRefreshToken();
-  var userId = await optionAwait(Core__Option.map(refreshToken, (async function (refreshToken) {
+  var userId = await Utils.$$Option.await_(Utils.$$Option.map(refreshToken, (async function (refreshToken) {
                 var redis = await Db.getRedis();
                 return await Redis.getDel(redis, refreshToken);
-              }))).then(optionFlatten);
-  var profile = await optionAwait(Core__Option.map(userId, getUserById)).then(optionFlatten);
-  return await optionAwait(Core__Option.map(profile, (function (profile) {
+              }))).then(Utils.$$Option.flatten);
+  var profile = await Utils.$$Option.await_(Utils.$$Option.map(userId, (function (userId) {
+                return Db.query(Actions__sql.GetUserById.one, {
+                            id: userId
+                          });
+              }))).then(Utils.$$Option.flatten);
+  return await Utils.$$Option.await_(Utils.$$Option.map(profile, (function (profile) {
                       return login(profile);
-                    }))).then(optionResultFlatten);
+                    }))).then(Utils.$$Option.flattenResult);
 }
 
 async function tryLogin(code) {
@@ -144,7 +92,7 @@ async function tryLogin(code) {
                         ]
                       ]).toString()), undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined));
     var data = await res.json();
-    return Core__Option.mapOr(Core__Option.flatMap(Core__Option.flatMap(Js_json.decodeObject(data), (function (obj) {
+    return Utils.$$Option.mapOr(Utils.$$Option.flatMap(Utils.$$Option.flatMap(Js_json.decodeObject(data), (function (obj) {
                           return Js_dict.get(obj, "access_token");
                         })), Js_json.decodeString), {
                 TAG: "Error",
@@ -162,16 +110,16 @@ async function tryLogin(code) {
               }, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined)).then(function (prim) {
           return prim.json();
         });
-    var response = Core__Option.flatMap(Core__Option.flatMap(Js_json.decodeObject(data), (function (obj) {
+    var response = Utils.$$Option.flatMap(Utils.$$Option.flatMap(Js_json.decodeObject(data), (function (obj) {
                 return Js_dict.get(obj, "response");
               })), Js_json.decodeObject);
-    var naverId = Core__Option.flatMap(Core__Option.flatMap(response, (function (obj) {
+    var naverId = Utils.$$Option.flatMap(Utils.$$Option.flatMap(response, (function (obj) {
                 return Js_dict.get(obj, "id");
               })), Js_json.decodeString);
-    var naverName = Core__Option.getOr(Core__Option.flatMap(Core__Option.flatMap(response, (function (obj) {
+    var naverName = Utils.$$Option.getOr(Utils.$$Option.flatMap(Utils.$$Option.flatMap(response, (function (obj) {
                     return Js_dict.get(obj, "nickname");
                   })), Js_json.decodeString), "");
-    return Core__Option.mapOr(naverId, {
+    return Utils.$$Option.mapOr(naverId, {
                 TAG: "Error",
                 _0: "Unauthorized"
               }, (function (x) {
@@ -186,7 +134,7 @@ async function tryLogin(code) {
   };
   var loginOrRegister = async function (profile, naverId, naverName) {
     if (profile !== undefined) {
-      var loginResult = await login(profile).then(Core__Result.getExn);
+      var loginResult = await login(profile).then(Utils.Result.getExn);
       return {
               TAG: "Login",
               _0: loginResult
@@ -205,23 +153,17 @@ async function tryLogin(code) {
           };
   };
   var accessToken = await getNaverAccessToken();
-  var naverProfile = await resultAwait(Core__Result.map(accessToken, getNaverProfile)).then(resultFlatten);
-  return await resultAwait(Core__Result.map(naverProfile, (async function (param) {
+  var naverProfile = await Utils.Result.await_(Utils.Result.map(accessToken, getNaverProfile)).then(Utils.Result.flatten);
+  return await Utils.Result.await_(Utils.Result.map(naverProfile, (async function (param) {
                     var naverId = param[0];
-                    var profile = await getUserByNaverId(naverId);
+                    var profile = await Db.query(Actions__sql.GetUserByNaverId.one, {
+                          naverId: naverId
+                        });
                     return await loginOrRegister(profile, naverId, param[1]);
                   })));
 }
 
 export {
-  getRefreshToken ,
-  setRefreshToken ,
-  resultAwait ,
-  optionAwait ,
-  optionFlatten ,
-  resultToOption ,
-  optionResultFlatten ,
-  resultFlatten ,
   refresh ,
   tryLogin ,
 }
