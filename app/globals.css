@@ -52,7 +52,6 @@ article pre {
   @apply bg-gray-200;
   @apply rounded-lg;
   @apply overflow-x-auto;
-  @apply min-w-0;
 }
 
 article code.language-poem {
