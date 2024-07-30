@@ -10,7 +10,7 @@ import * as JsxRuntime from "react/jsx-runtime";
 function Pages_HeaderLayout_AuthMenu$Container(props) {
   return JsxRuntime.jsx("menu", {
               children: props.children,
-              className: "flex items-center"
+              className: "flex items-center flex-wrap min-w-0"
             });
 }
 
@@ -21,7 +21,7 @@ var Container = {
 function Pages_HeaderLayout_AuthMenu$Item(props) {
   return JsxRuntime.jsx("li", {
               children: props.children,
-              className: "before:content-['·'] first:before:content-none before:mx-1"
+              className: "before:content-['·'] first:before:content-none before:mx-1 min-w-0 flex"
             });
 }
 
@@ -63,8 +63,17 @@ function Pages_HeaderLayout_AuthMenu(props) {
   } else {
     return JsxRuntime.jsxs(Pages_HeaderLayout_AuthMenu$Container, {
                 children: [
-                  JsxRuntime.jsx(Pages_HeaderLayout_AuthMenu$Item, {
-                        children: auth._0.profile.name + "님 환영합니다"
+                  JsxRuntime.jsxs(Pages_HeaderLayout_AuthMenu$Item, {
+                        children: [
+                          JsxRuntime.jsx("div", {
+                                children: auth._0.profile.name,
+                                className: "overflow-hidden text-ellipsis whitespace-nowrap min-w-0"
+                              }),
+                          JsxRuntime.jsx("div", {
+                                children: "님 환영합니다",
+                                className: "whitespace-nowrap"
+                              })
+                        ]
                       }),
                   JsxRuntime.jsx(Pages_HeaderLayout_AuthMenu$Item, {
                         children: JsxRuntime.jsx(Link, {

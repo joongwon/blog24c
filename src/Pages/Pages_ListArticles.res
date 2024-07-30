@@ -11,12 +11,14 @@ let default = async () => {
   `)->Db.query() {
   | articles =>
     module ArticleList = Components_ArticleList
-    <ArticleList>
-      {articles
-      ->Array.map(article =>
-        <ArticleList.Item item={(article :> ArticleList.Item.t)} key={article.id->Int.toString} />
-      )
-      ->React.array}
-    </ArticleList>
+    <main className="p-4">
+      <ArticleList>
+        {articles
+        ->Array.map(article =>
+          <ArticleList.Item item={(article :> ArticleList.Item.t)} key={article.id->Int.toString} />
+        )
+        ->React.array}
+      </ArticleList>
+    </main>
   }
 }

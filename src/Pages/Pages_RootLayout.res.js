@@ -20,9 +20,7 @@ function Pages_RootLayout$default(props) {
                             rel: "stylesheet"
                           })
                     }),
-                JsxRuntime.jsx("body", {
-                      children: props.children
-                    }),
+                props.children,
                 JsxRuntime.jsx(InitToken.make, {})
               ],
               lang: "ko"

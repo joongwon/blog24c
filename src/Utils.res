@@ -21,3 +21,12 @@ module Option = {
   let flatten = option => option->Option.flatMap(x => x)
   let flattenResult = option => option->Option.flatMap(Result.toOption)
 }
+
+let useIsServer = () => {
+  let (isServer, setIsServer) = React.useState(_ => true)
+  React.useLayoutEffect(() => {
+    setIsServer(_ => false)
+    None
+  }, [])
+  isServer
+}

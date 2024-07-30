@@ -1,12 +1,17 @@
 @react.component
 let default = (~children) => {
   module AuthMenu = Pages_HeaderLayout_AuthMenu
+  module NavMenu = Pages_HeaderLayout_NavMenu
+  module Header = Pages_HeaderLayout_Header
   let title = "왼손잡이해방연대 아지트"
-  <main className="mx-auto flex flex-col max-w-screen-lg p-4">
-    <header className="flex justify-between bg-neutral-200 my-4 p-4">
+  <body className="mx-auto flex flex-col max-w-[60rem] gap-4">
+    <Header>
       <Next.Link className={"text-2xl font-bold"->Some} href="/"> {title->React.string} </Next.Link>
       <AuthMenu />
-    </header>
-    children
-  </main>
+    </Header>
+    <div className="flex flex-row last:*:flex-1 gap-4 items-start">
+      <NavMenu />
+      children
+    </div>
+  </body>
 }

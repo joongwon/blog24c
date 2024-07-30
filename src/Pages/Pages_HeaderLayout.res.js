@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import * as JsxRuntime from "react/jsx-runtime";
+import * as Pages_HeaderLayout_Header from "./Pages_HeaderLayout_Header.res.js";
+import * as Pages_HeaderLayout_NavMenu from "./Pages_HeaderLayout_NavMenu.res.js";
 import * as Pages_HeaderLayout_AuthMenu from "./Pages_HeaderLayout_AuthMenu.res.js";
 
 function Pages_HeaderLayout$default(props) {
-  return JsxRuntime.jsxs("main", {
+  return JsxRuntime.jsxs("body", {
               children: [
-                JsxRuntime.jsxs("header", {
+                JsxRuntime.jsxs(Pages_HeaderLayout_Header.make, {
                       children: [
                         JsxRuntime.jsx(Link, {
                               href: "/",
@@ -15,12 +17,17 @@ function Pages_HeaderLayout$default(props) {
                               className: "text-2xl font-bold"
                             }),
                         JsxRuntime.jsx(Pages_HeaderLayout_AuthMenu.make, {})
-                      ],
-                      className: "flex justify-between bg-neutral-200 my-4 p-4"
+                      ]
                     }),
-                props.children
+                JsxRuntime.jsxs("div", {
+                      children: [
+                        JsxRuntime.jsx(Pages_HeaderLayout_NavMenu.make, {}),
+                        props.children
+                      ],
+                      className: "flex flex-row last:*:flex-1 gap-4 items-start"
+                    })
               ],
-              className: "mx-auto flex flex-col max-w-screen-lg p-4"
+              className: "mx-auto flex flex-col max-w-[60rem] gap-4"
             });
 }
 

@@ -3,14 +3,16 @@
 module Container = {
   @react.component
   let make = (~children) => {
-    <menu className="flex items-center"> {children} </menu>
+    <menu className="flex items-center flex-wrap min-w-0"> {children} </menu>
   }
 }
 
 module Item = {
   @react.component
   let make = (~children) => {
-    <li className="before:content-['·'] first:before:content-none before:mx-1"> {children} </li>
+    <li className="before:content-['·'] first:before:content-none before:mx-1 min-w-0 flex">
+      {children}
+    </li>
   }
 }
 
@@ -38,7 +40,12 @@ let make = () => {
     </Container>
   | LoggedIn(user) =>
     <Container>
-      <Item> {`${user.profile.name}님 환영합니다`->React.string} </Item>
+      <Item>
+        <div className="overflow-hidden text-ellipsis whitespace-nowrap min-w-0">
+          {user.profile.name->React.string}
+        </div>
+        <div className="whitespace-nowrap"> {"님 환영합니다"->React.string} </div>
+      </Item>
       <Item>
         <Next.Link href="/drafts"> {"일지 쓰기"->React.string} </Next.Link>
       </Item>
